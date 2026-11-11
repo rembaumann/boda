@@ -66,6 +66,10 @@ jobs:
         if: steps.playwright-install.outcome == 'failure' || steps.playwright-install.outcome == 'cancelled'
         timeout-minutes: 5
         run: |
+          # The timed-out attempt leaves root apt-get holding the lists lock.
+          sudo pkill -x apt-get || true
+          sudo pkill -x apt || true
+          sleep 2
           sudo dpkg --configure -a || true
           npx playwright install --with-deps chromium
 
