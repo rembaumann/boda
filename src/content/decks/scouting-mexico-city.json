@@ -1,0 +1,498 @@
+[
+  {
+    "id": "g01",
+    "es": "Hola, mucho gusto.",
+    "en": "Hi, nice to meet you.",
+    "pronunciation": "OH-lah, MOO-choh GOOS-toh",
+    "difficulty": 1,
+    "category": "greetings",
+    "needsNativeReview": false
+  },
+  {
+    "id": "g02",
+    "es": "Buenas tardes.",
+    "en": "Good afternoon.",
+    "pronunciation": "BWEH-nahs TAR-dehs",
+    "difficulty": 1,
+    "category": "greetings",
+    "needsNativeReview": false
+  },
+  {
+    "id": "g03",
+    "es": "¿Cómo está usted?",
+    "en": "How are you?",
+    "pronunciation": "KOH-moh ehs-TAH oos-TED",
+    "difficulty": 1,
+    "category": "greetings",
+    "needsNativeReview": false
+  },
+  {
+    "id": "g04",
+    "es": "Muy bien, gracias. ¿Y usted?",
+    "en": "Very well, thanks. And you?",
+    "difficulty": 1,
+    "category": "greetings",
+    "needsNativeReview": false
+  },
+  {
+    "id": "g05",
+    "es": "Somos pareja y nos vamos a casar.",
+    "en": "We're a couple and we're getting married.",
+    "difficulty": 2,
+    "category": "greetings",
+    "needsNativeReview": false
+  },
+  {
+    "id": "g06",
+    "es": "Estamos de visita en la Ciudad de México.",
+    "en": "We're visiting Mexico City.",
+    "difficulty": 2,
+    "category": "greetings",
+    "needsNativeReview": false
+  },
+  {
+    "id": "g07",
+    "es": "Buscamos un lugar para la boda.",
+    "en": "We're looking for a place for the wedding.",
+    "difficulty": 2,
+    "category": "greetings",
+    "needsNativeReview": false
+  },
+  {
+    "id": "g08",
+    "es": "¿Habla inglés?",
+    "en": "Do you speak English?",
+    "pronunciation": "AH-blah een-GLEHS",
+    "difficulty": 1,
+    "category": "greetings",
+    "needsNativeReview": false
+  },
+  {
+    "id": "g09",
+    "es": "No hablo mucho español.",
+    "en": "I don't speak much Spanish.",
+    "difficulty": 1,
+    "category": "greetings",
+    "needsNativeReview": false
+  },
+  {
+    "id": "g10",
+    "es": "¡Qué padre!",
+    "en": "That's great.",
+    "pronunciation": "keh PAH-dreh",
+    "difficulty": 2,
+    "category": "greetings",
+    "needsNativeReview": true
+  },
+  {
+    "id": "g11",
+    "es": "¿Qué onda?",
+    "en": "What's up?",
+    "pronunciation": "keh ON-dah",
+    "difficulty": 2,
+    "category": "greetings",
+    "needsNativeReview": true
+  },
+  {
+    "id": "g12",
+    "es": "Nos vemos luego.",
+    "en": "See you later.",
+    "difficulty": 1,
+    "category": "greetings",
+    "needsNativeReview": false
+  },
+  {
+    "id": "r01",
+    "es": "Una mesa para dos, por favor.",
+    "en": "A table for two, please.",
+    "difficulty": 1,
+    "category": "restaurants",
+    "needsNativeReview": false
+  },
+  {
+    "id": "r02",
+    "es": "El menú, por favor.",
+    "en": "The menu, please.",
+    "pronunciation": "el meh-NOO",
+    "difficulty": 1,
+    "category": "restaurants",
+    "needsNativeReview": false
+  },
+  {
+    "id": "r03",
+    "es": "¿Qué nos recomienda?",
+    "en": "What do you recommend for us?",
+    "difficulty": 2,
+    "category": "restaurants",
+    "needsNativeReview": false
+  },
+  {
+    "id": "r04",
+    "es": "Para mí, los tacos al pastor.",
+    "en": "For me, the al pastor tacos.",
+    "difficulty": 2,
+    "category": "restaurants",
+    "needsNativeReview": false
+  },
+  {
+    "id": "r05",
+    "es": "Un agua natural, por favor.",
+    "en": "A glass of plain water, please.",
+    "pronunciation": "oon AH-gwah nah-too-RAHL",
+    "difficulty": 2,
+    "category": "restaurants",
+    "needsNativeReview": true
+  },
+  {
+    "id": "r06",
+    "es": "Sin cilantro, por favor.",
+    "en": "No cilantro, please.",
+    "pronunciation": "seen see-LAHN-troh",
+    "difficulty": 1,
+    "category": "restaurants",
+    "needsNativeReview": false
+  },
+  {
+    "id": "r07",
+    "es": "Tenemos alergia a los mariscos.",
+    "en": "We have a shellfish allergy.",
+    "difficulty": 3,
+    "category": "restaurants",
+    "needsNativeReview": false
+  },
+  {
+    "id": "r08",
+    "es": "¿Esto lleva cacahuate?",
+    "en": "Does this have peanut in it?",
+    "pronunciation": "yeh-vah kah-kah-WAH-teh",
+    "difficulty": 2,
+    "category": "restaurants",
+    "needsNativeReview": true
+  },
+  {
+    "id": "r09",
+    "es": "¿Me trae la cuenta, por favor?",
+    "en": "Could I have the check, please?",
+    "difficulty": 2,
+    "category": "restaurants",
+    "needsNativeReview": false
+  },
+  {
+    "id": "r10",
+    "es": "¿Aceptan tarjeta?",
+    "en": "Do you take cards?",
+    "difficulty": 1,
+    "category": "restaurants",
+    "needsNativeReview": false
+  },
+  {
+    "id": "r11",
+    "es": "¿Ya incluye el servicio?",
+    "en": "Does this already include the service charge?",
+    "difficulty": 2,
+    "category": "restaurants",
+    "needsNativeReview": true
+  },
+  {
+    "id": "r12",
+    "es": "Está riquísimo.",
+    "en": "It's really delicious.",
+    "pronunciation": "ehs-TAH ree-KEE-see-moh",
+    "difficulty": 2,
+    "category": "restaurants",
+    "needsNativeReview": true
+  },
+  {
+    "id": "r13",
+    "es": "Para llevar, por favor.",
+    "en": "To go, please.",
+    "difficulty": 1,
+    "category": "restaurants",
+    "needsNativeReview": false
+  },
+  {
+    "id": "r14",
+    "es": "¿Nos trae cuentas separadas?",
+    "en": "Can we get separate checks?",
+    "difficulty": 3,
+    "category": "restaurants",
+    "needsNativeReview": true
+  },
+  {
+    "id": "v01",
+    "es": "¿Nos puede mostrar el salón?",
+    "en": "Could you show us the hall?",
+    "difficulty": 2,
+    "category": "venues",
+    "needsNativeReview": false
+  },
+  {
+    "id": "v02",
+    "es": "¿Cuántas personas caben?",
+    "en": "How many people does it hold?",
+    "difficulty": 2,
+    "category": "venues",
+    "needsNativeReview": false
+  },
+  {
+    "id": "v03",
+    "es": "Vamos a ser como ciento veinte invitados.",
+    "en": "We'll be about a hundred and twenty guests.",
+    "difficulty": 3,
+    "category": "venues",
+    "needsNativeReview": false
+  },
+  {
+    "id": "v04",
+    "es": "¿Ustedes tienen libre el primer sábado de mayo?",
+    "en": "Do you have the first Saturday in May available?",
+    "difficulty": 3,
+    "category": "venues",
+    "needsNativeReview": true
+  },
+  {
+    "id": "v05",
+    "es": "¿Cuánto cuesta el paquete?",
+    "en": "How much is the package?",
+    "difficulty": 1,
+    "category": "venues",
+    "needsNativeReview": false
+  },
+  {
+    "id": "v06",
+    "es": "¿Está en pesos?",
+    "en": "Is that in pesos?",
+    "difficulty": 1,
+    "category": "venues",
+    "needsNativeReview": false
+  },
+  {
+    "id": "v07",
+    "es": "¿Qué incluye la renta del lugar?",
+    "en": "What does the venue rental include?",
+    "difficulty": 2,
+    "category": "venues",
+    "needsNativeReview": true
+  },
+  {
+    "id": "v08",
+    "es": "¿Incluye la cena y las bebidas?",
+    "en": "Does it include dinner and drinks?",
+    "difficulty": 3,
+    "category": "venues",
+    "needsNativeReview": false
+  },
+  {
+    "id": "v09",
+    "es": "¿Tienen jardín para la ceremonia?",
+    "en": "Do you have a garden for the ceremony?",
+    "difficulty": 2,
+    "category": "venues",
+    "needsNativeReview": false
+  },
+  {
+    "id": "v10",
+    "es": "¿Qué pasa si llueve?",
+    "en": "What happens if it rains?",
+    "difficulty": 1,
+    "category": "venues",
+    "needsNativeReview": false
+  },
+  {
+    "id": "v11",
+    "es": "¿Hasta qué hora podemos estar?",
+    "en": "How late can we stay?",
+    "difficulty": 2,
+    "category": "venues",
+    "needsNativeReview": false
+  },
+  {
+    "id": "v12",
+    "es": "¿Nos puede mandar la cotización por correo electrónico?",
+    "en": "Can you email us the quote?",
+    "difficulty": 3,
+    "category": "venues",
+    "needsNativeReview": true
+  },
+  {
+    "id": "v13",
+    "es": "Queremos apartar la fecha.",
+    "en": "We want to hold the date.",
+    "pronunciation": "ah-par-TAR",
+    "difficulty": 2,
+    "category": "venues",
+    "needsNativeReview": true
+  },
+  {
+    "id": "v14",
+    "es": "¿Piden anticipo para reservar?",
+    "en": "Do you require a deposit to reserve?",
+    "difficulty": 3,
+    "category": "venues",
+    "needsNativeReview": true
+  },
+  {
+    "id": "t01",
+    "es": "¿Me lleva a la Condesa, por favor?",
+    "en": "Can you take me to La Condesa, please?",
+    "difficulty": 2,
+    "category": "getting-around",
+    "needsNativeReview": false
+  },
+  {
+    "id": "t02",
+    "es": "¿Dónde pido un Uber?",
+    "en": "Where do I request an Uber?",
+    "difficulty": 1,
+    "category": "getting-around",
+    "needsNativeReview": false
+  },
+  {
+    "id": "t03",
+    "es": "¿Está lejos de aquí?",
+    "en": "Is it far from here?",
+    "difficulty": 1,
+    "category": "getting-around",
+    "needsNativeReview": false
+  },
+  {
+    "id": "t04",
+    "es": "Siga derecho, por favor.",
+    "en": "Keep going straight, please.",
+    "pronunciation": "SEE-gah deh-REH-choh",
+    "difficulty": 2,
+    "category": "getting-around",
+    "needsNativeReview": true
+  },
+  {
+    "id": "t05",
+    "es": "Doble a la derecha en el semáforo.",
+    "en": "Turn right at the traffic light.",
+    "pronunciation": "DOH-bleh seh-MAH-foh-roh",
+    "difficulty": 3,
+    "category": "getting-around",
+    "needsNativeReview": false
+  },
+  {
+    "id": "t06",
+    "es": "Doble a la izquierda.",
+    "en": "Turn left.",
+    "difficulty": 1,
+    "category": "getting-around",
+    "needsNativeReview": false
+  },
+  {
+    "id": "t07",
+    "es": "Aquí está bien, gracias.",
+    "en": "Here is fine, thank you.",
+    "difficulty": 1,
+    "category": "getting-around",
+    "needsNativeReview": false
+  },
+  {
+    "id": "t08",
+    "es": "¿Cuánto va a salir?",
+    "en": "How much will it be?",
+    "difficulty": 3,
+    "category": "getting-around",
+    "needsNativeReview": true
+  },
+  {
+    "id": "t09",
+    "es": "¿Me puede dejar en la esquina?",
+    "en": "Can you drop me at the corner?",
+    "difficulty": 2,
+    "category": "getting-around",
+    "needsNativeReview": false
+  },
+  {
+    "id": "t10",
+    "es": "Estamos perdidos. ¿Nos puede ayudar?",
+    "en": "We're lost. Can you help us?",
+    "difficulty": 3,
+    "category": "getting-around",
+    "needsNativeReview": false
+  },
+  {
+    "id": "t11",
+    "es": "¿Cómo llego al Centro?",
+    "en": "How do I get to the historic center?",
+    "difficulty": 2,
+    "category": "getting-around",
+    "needsNativeReview": true
+  },
+  {
+    "id": "t12",
+    "es": "¿Me confirma la dirección, por favor?",
+    "en": "Can you confirm the address, please?",
+    "difficulty": 2,
+    "category": "getting-around",
+    "needsNativeReview": false
+  },
+  {
+    "id": "p01",
+    "es": "Por favor.",
+    "en": "Please.",
+    "difficulty": 1,
+    "category": "polite",
+    "needsNativeReview": false
+  },
+  {
+    "id": "p02",
+    "es": "Muchas gracias.",
+    "en": "Thank you very much.",
+    "difficulty": 1,
+    "category": "polite",
+    "needsNativeReview": false
+  },
+  {
+    "id": "p03",
+    "es": "De nada.",
+    "en": "You're welcome.",
+    "difficulty": 1,
+    "category": "polite",
+    "needsNativeReview": false
+  },
+  {
+    "id": "p04",
+    "es": "Con permiso.",
+    "en": "Excuse me, coming through.",
+    "pronunciation": "kohn per-MEE-soh",
+    "difficulty": 1,
+    "category": "polite",
+    "needsNativeReview": true
+  },
+  {
+    "id": "p05",
+    "es": "Disculpe.",
+    "en": "Excuse me, I have a question.",
+    "difficulty": 1,
+    "category": "polite",
+    "needsNativeReview": false
+  },
+  {
+    "id": "p06",
+    "es": "No entiendo.",
+    "en": "I don't understand.",
+    "difficulty": 1,
+    "category": "polite",
+    "needsNativeReview": false
+  },
+  {
+    "id": "p07",
+    "es": "¿Puede repetirlo más despacio?",
+    "en": "Can you repeat that more slowly?",
+    "difficulty": 2,
+    "category": "polite",
+    "needsNativeReview": false
+  },
+  {
+    "id": "p08",
+    "es": "¿Mande?",
+    "en": "Pardon?",
+    "pronunciation": "MAHN-deh",
+    "difficulty": 2,
+    "category": "polite",
+    "needsNativeReview": true
+  }
+]
