@@ -1,4 +1,4 @@
-// iPhone 15 captures against `npm run preview`. Install playwright separately; it is not an app dependency.
+// iPhone 15 captures against `npm run preview`. Uses Playwright from the @playwright/test dev dependency.
 import { mkdir } from "node:fs/promises";
 import { chromium } from "playwright";
 
