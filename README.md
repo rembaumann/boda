@@ -1,5 +1,7 @@
 # boda
 
+[![CI](https://github.com/rembaumann/boda/actions/workflows/ci.yml/badge.svg)](https://github.com/rembaumann/boda/actions/workflows/ci.yml)
+
 A small installable web app for practicing Mexican Spanish. Two people can each run a 10-question set, with a harder mix for the more experienced player. This version is single-player and stores progress on the phone. Daily duels and a shared scoreboard come later.
 
 The interface is built for iPhone Safari, including a Home Screen icon that opens full screen.
@@ -31,6 +33,21 @@ npm run typecheck
 npm run build
 npm run preview
 ```
+
+## Running tests
+
+GitHub Actions runs the same checks on every pull request and every push to `main`: install, lint, typecheck, unit tests, a production build, and one end-to-end smoke test.
+
+```bash
+npm run lint
+npm run typecheck
+npm test
+npm run build
+npx playwright install chromium
+npm run test:e2e
+```
+
+`npm test` is the Vitest unit suite and does not need a browser. `npm run test:e2e` is Playwright. It serves the production build, so run `npm run build` first. The smoke test uses a 393×852 viewport, opens the app, picks a player, finishes a 10-question set, and checks the summary screen. `npx playwright install chromium` downloads the browser once. On Linux, `npx playwright install --with-deps chromium` also installs the system libraries Chromium needs.
 
 ## Deploy to Vercel
 
