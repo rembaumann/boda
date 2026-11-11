@@ -19,7 +19,8 @@ jobs:
     # Required status check name. Branch protection must require "CI".
     name: CI
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # Leaves room for one 5-minute browser install and one retry, then the smoke test.
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -45,8 +46,28 @@ jobs:
       - name: Production build
         run: npm run build
 
+      - name: Resolve Playwright version
+        id: playwright-version
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
+
       - name: Install Playwright browser
+        id: playwright-install
+        timeout-minutes: 5
+        continue-on-error: true
         run: npx playwright install --with-deps chromium
+
+      - name: Retry Playwright browser install
+        if: steps.playwright-install.outcome == 'failure' || steps.playwright-install.outcome == 'cancelled'
+        timeout-minutes: 5
+        run: |
+          sudo dpkg --configure -a || true
+          npx playwright install --with-deps chromium
 
       - name: End-to-end smoke test
         run: npm run test:e2e
