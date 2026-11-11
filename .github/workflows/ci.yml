@@ -46,6 +46,14 @@ jobs:
       - name: Production build
         run: npm run build
 
+      - name: Client bundle excludes the Linear key
+        run: |
+          test -d dist
+          if grep -R -I -n -E -e 'lin_api_' -e 'LINEAR_API_KEY' dist; then
+            echo "Linear API key material is in the client bundle."
+            exit 1
+          fi
+
       - name: Resolve Playwright version
         id: playwright-version
         run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"

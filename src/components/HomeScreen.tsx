@@ -1,4 +1,5 @@
 import { allocateCounts } from "../lib/allocate";
+import { FeedbackForm } from "./FeedbackForm";
 import { CopyResultButton } from "./ShareGrid";
 import { DRILL_TYPES, type DrillMix, type PlayerConfig, type SeasonConfig } from "../domain/types";
 import type { SessionRecord } from "../lib/progress";
@@ -174,6 +175,25 @@ export function HomeScreen({
         <button type="button" className={duelFirst ? "secondary" : "primary"} onClick={onPractice}>
           Start practice
         </button>
+        <section className="suggest-card" aria-labelledby="suggest-title" data-feature-form>
+          <h2 id="suggest-title" className="section-title">
+            Suggest a feature
+          </h2>
+          <p className="suggest-note">What would you like to see?</p>
+          <FeedbackForm
+            kind="feature"
+            getFields={() => ({
+              playerId: selectedPlayerId,
+              screen: "home",
+              mode: null,
+              seasonId: practiceSeason.id,
+              deckFile: null,
+              phraseId: null,
+              drillType: null,
+              lastAnswer: null,
+            })}
+          />
+        </section>
         {shareText ? <CopyResultButton text={shareText} /> : null}
         {showReload ? (
           <button type="button" className="text-button wide" onClick={onReload}>

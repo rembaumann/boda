@@ -22,7 +22,10 @@ export default tseslint.config(
     },
   },
   {
-    files: ["e2e/**/*.ts", "playwright.config.ts"],
+    files: ["e2e/**/*.ts", "playwright.config.ts", "api/**/*.ts", "src/server/**/*.ts"],
+    languageOptions: {
+      globals: globals.node,
+    },
     rules: {
       "react-refresh/only-export-components": "off",
     },

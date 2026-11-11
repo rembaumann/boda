@@ -38,7 +38,7 @@ npm run preview
 
 ## Running tests
 
-GitHub Actions runs the same checks on every pull request and every push to `main`: install, lint, typecheck, unit tests, a production build, and one end-to-end smoke test.
+GitHub Actions runs the same checks on every pull request and every push to `main`: install, lint, typecheck, unit tests, a production build, a scan that the built client does not contain the Linear API key, and one end-to-end smoke test.
 
 ```bash
 npm run lint
@@ -59,8 +59,25 @@ The app is a static Vite build. Vercel detects that with no project settings to 
 2. In Vercel, import the repository.
 3. Leave the framework preset on Vite. Build command: `npm run build`. Output directory: `dist`.
 4. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` from [`.env.example`](.env.example). Use the anon public key, never the service role key. Redeploy after changing them, because Vite bakes them into the build.
+5. Add `LINEAR_API_KEY` for in-app feedback. That key is read only by the `/api/feedback` function. Do not prefix it with `VITE_`. A redeploy picks it up. The static bundle never includes it.
 
-`vercel.json` only tells Vercel not to cache the service worker or the manifest, so an update can replace the installed copy. After the first online visit, the service worker keeps the drills available offline.
+`vercel.json` only tells Vercel not to cache the service worker or the manifest, so an update can replace the installed copy. After the first online visit, the service worker keeps the drills available offline. The service worker does not intercept `/api/`.
+
+## Feedback
+
+The home screen has a **Suggest a feature** card under the practice button. A bug button sits at the bottom-right of every screen, including drills, above the iPhone home indicator. Both send one description (5–1000 characters) to `POST /api/feedback`.
+
+The function files a Linear issue. Bugs are labeled `from-app` and `Bug`, start in Triage, and are High priority. If the team has no Triage state, they start in Backlog. Feature requests are labeled `from-app` and `Feature`, start in Backlog, and have no priority. The issue body is the person's exact words plus who sent it, the screen, and, for a bug during a drill, the deck, phrase, drill type, and last answer. It also includes the commit SHA when Vercel provides one, the user agent, whether the phone was online, and the time.
+
+If `LINEAR_API_KEY` is missing, the form says feedback isn't configured and the rest of the app still runs. Submissions are not queued offline.
+
+### Point a fork at your own Linear workspace
+
+1. In Linear, create the labels `from-app`, `Bug`, and `Feature`. Add a workflow state named `Triage` if bugs should land there; otherwise they use `Backlog`.
+2. In [`src/config/app.config.ts`](src/config/app.config.ts), set `feedback.teamKey` to your team's key (the short prefix on issue ids, such as `REM`). Set `feedback.projectName` to a project name, or `""` to file issues with no project. Change the label and state names if yours differ.
+3. Create a Linear personal API key.
+4. In the Vercel project, set `LINEAR_API_KEY` to that key for Production and Preview. Leave it off the client: no `VITE_` prefix, and do not put the key in a file that gets committed.
+5. Redeploy. The key is read when someone submits, so it is not baked into the static build.
 
 ## Make it your own
 
@@ -80,6 +97,7 @@ Nothing about a particular couple is written into the screens. Edit the files be
 - `players` — id, display name, a short note, and a question-type mix. The mix is three relative weights: `multipleChoice`, `typeAnswer`, and `listen`. They don’t have to sum to 10. A more experienced player should carry more `typeAnswer` weight. A beginner should carry more `multipleChoice` weight. The home screen shows the resulting counts. There is no password: each person taps their name.
 - `seasons` — id, theme, `deckFile` (the JSON file name without `.json`, or `null` until that deck exists), and `order`. The default list is Scouting Trip, Vendors & Planner, Family & Guests, then Toast & Vows. After the last theme, the next season starts again at the first theme.
 - `storageKey` — the localStorage key, so two forks on one phone don’t overwrite each other.
+- `feedback` — the Linear team key, optional project name, label names (`from-app`, `Bug`, `Feature`), and the workflow state names. See [Feedback](#feedback). The API key is not in this file.
 
 Player ids in the config have to match a row in the migration's `players` table: lowercase letters, digits, and hyphens. If you change player ids, player names, season ids, or themes before applying the migration, edit the `insert into public.players` and `insert into public.seasons` rows in that file so they match. The app reads player names, themes, and the points target from this config, not from the database.
 
