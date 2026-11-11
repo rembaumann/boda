@@ -9,21 +9,59 @@ function overlaps(
   return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
 }
 
+function visibleBox(
+  box: { x: number; y: number; width: number; height: number },
+  clip: { x: number; y: number; width: number; height: number },
+): { x: number; y: number; width: number; height: number } | null {
+  const x = Math.max(box.x, clip.x);
+  const y = Math.max(box.y, clip.y);
+  const right = Math.min(box.x + box.width, clip.x + clip.width);
+  const bottom = Math.min(box.y + box.height, clip.y + clip.height);
+  if (right - x <= 0 || bottom - y <= 0) return null;
+  return { x, y, width: right - x, height: bottom - y };
+}
+
 async function expectBugButtonClear(page: Page, bug: Locator): Promise<void> {
   const bugBox = await bug.boundingBox();
+  const scrollBox = await page.locator(".app-scroll").boundingBox();
+  const viewport = page.viewportSize();
   expect(bugBox).not.toBeNull();
-  if (!bugBox) return;
-  expect(bugBox.x).toBeGreaterThan(393 / 2);
-  expect(bugBox.y).toBeGreaterThan(852 - 160);
-  expect(bugBox.x + bugBox.width).toBeLessThanOrEqual(393);
-  expect(bugBox.y + bugBox.height).toBeLessThanOrEqual(852);
+  expect(scrollBox).not.toBeNull();
+  expect(viewport).not.toBeNull();
+  if (!bugBox || !scrollBox || !viewport) return;
+  expect(bugBox.x).toBeGreaterThan(viewport.width / 2);
+  expect(bugBox.y).toBeGreaterThan(viewport.height - 160);
+  expect(bugBox.x + bugBox.width).toBeLessThanOrEqual(viewport.width);
+  expect(bugBox.y + bugBox.height).toBeLessThanOrEqual(viewport.height);
   const controls = page.locator("[data-choice], .question .primary, .answer-input, .speaker");
   const count = await controls.count();
   for (let index = 0; index < count; index += 1) {
     const box = await controls.nth(index).boundingBox();
     if (!box) continue;
-    expect(overlaps(bugBox, box)).toBe(false);
+    const visible = visibleBox(box, scrollBox);
+    if (!visible) continue;
+    expect(overlaps(bugBox, visible)).toBe(false);
   }
+}
+
+async function expectFullyClearOfBug(page: Page, target: Locator): Promise<void> {
+  await target.scrollIntoViewIfNeeded();
+  const box = await target.boundingBox();
+  const bugBox = await page.locator("[data-bug-button]").boundingBox();
+  const scrollBox = await page.locator(".app-scroll").boundingBox();
+  const viewport = page.viewportSize();
+  expect(box).not.toBeNull();
+  expect(bugBox).not.toBeNull();
+  expect(scrollBox).not.toBeNull();
+  expect(viewport).not.toBeNull();
+  if (!box || !bugBox || !scrollBox || !viewport) return;
+  expect(box.y).toBeGreaterThanOrEqual(-1);
+  expect(box.x).toBeGreaterThanOrEqual(-1);
+  expect(box.y + box.height).toBeLessThanOrEqual(viewport.height + 1);
+  expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 1);
+  expect(box.y).toBeGreaterThanOrEqual(scrollBox.y - 1);
+  expect(box.y + box.height).toBeLessThanOrEqual(scrollBox.y + scrollBox.height + 1);
+  expect(overlaps(box, bugBox)).toBe(false);
 }
 
 async function answerQuestion(page: Page, index: number): Promise<void> {
@@ -44,6 +82,35 @@ async function answerQuestion(page: Page, index: number): Promise<void> {
   const advance = index + 1 === questionsPerSet ? "See results" : "Next";
   await page.getByRole("button", { name: advance, exact: true }).click();
 }
+
+test("keeps the last home card clear of the bug button", async ({ page }) => {
+  for (const viewport of [
+    { width: 393, height: 852 },
+    { width: 375, height: 667 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await page.goto("/");
+    await expect(page.locator("[data-screen='home']")).toBeVisible();
+    const card = page.locator(".player").last();
+    await expect(card).toBeVisible();
+    await expectFullyClearOfBug(page, card);
+    await expectFullyClearOfBug(page, page.locator(".suggest-card"));
+
+    await page.getByRole("button", { name: "Start practice", exact: true }).click();
+    await expect(page.locator("[data-screen='drill']")).toBeVisible();
+    const bug = page.getByRole("button", { name: "Report a bug" });
+    await expectBugButtonClear(page, bug);
+    const drillTail = page.locator("[data-choice], .answer-input, .question .primary").last();
+    await expectFullyClearOfBug(page, drillTail);
+
+    await page.goto("/");
+    await page.getByRole("button", { name: "Play today's duel", exact: true }).click();
+    await expect(page.locator("[data-screen='drill']")).toBeVisible();
+    await expectBugButtonClear(page, bug);
+    const duelTail = page.locator("[data-choice], .answer-input, .question .primary, .speaker").last();
+    await expectFullyClearOfBug(page, duelTail);
+  }
+});
 
 test("opens the app, picks a player, and finishes a 10-question set", async ({ page }) => {
   expect(page.viewportSize()).toEqual({ width: 393, height: 852 });
