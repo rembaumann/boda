@@ -19,7 +19,7 @@ jobs:
     # Required status check name. Branch protection must require "CI".
     name: CI
     runs-on: ubuntu-latest
-    # Leaves room for one 5-minute browser install and one retry, then the smoke test.
+    # Room for the browser download, a library install if the runner needs one, and the smoke test.
     timeout-minutes: 15
     steps:
       - name: Checkout
@@ -56,22 +56,34 @@ jobs:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
 
+      # Download the browser without apt. --with-deps hangs when the Ubuntu
+      # mirrors are slow, and a retry then collides with the lock apt still holds.
       - name: Install Playwright browser
-        id: playwright-install
         timeout-minutes: 5
-        continue-on-error: true
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium
 
-      - name: Retry Playwright browser install
-        if: steps.playwright-install.outcome == 'failure' || steps.playwright-install.outcome == 'cancelled'
-        timeout-minutes: 5
+      - name: Ensure Chromium can launch
+        timeout-minutes: 6
         run: |
-          # The timed-out attempt leaves root apt-get holding the lists lock.
-          sudo pkill -x apt-get || true
-          sudo pkill -x apt || true
-          sleep 2
-          sudo dpkg --configure -a || true
-          npx playwright install --with-deps chromium
+          launch='import { chromium } from "@playwright/test"; const browser = await chromium.launch(); await browser.close();'
+          if node --input-type=module -e "$launch"; then
+            echo "Chromium launched with the libraries already on the runner."
+            exit 0
+          fi
+          echo "Installing system libraries for Chromium."
+          for attempt in 1 2 3; do
+            if sudo lsof /var/lib/apt/lists/lock /var/lib/dpkg/lock-frontend >/dev/null 2>&1; then
+              echo "Waiting for apt to release its lock."
+              sleep 5
+              continue
+            fi
+            if npx playwright install-deps chromium; then
+              node --input-type=module -e "$launch"
+              exit 0
+            fi
+            sleep $((attempt * 5))
+          done
+          exit 1
 
       - name: End-to-end smoke test
         run: npm run test:e2e
