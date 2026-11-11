@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { appConfig } from "./config/app.config";
+import { AppFrame } from "./components/BugButton";
 import { DrillScreen } from "./components/DrillScreen";
 import { HomeScreen } from "./components/HomeScreen";
 import { SummaryScreen } from "./components/SummaryScreen";
@@ -12,6 +13,7 @@ import { createSession } from "./lib/questions";
 import { MAX_ELAPSED_MS } from "./lib/scoreboard";
 import type { DuelResult } from "./lib/scoring";
 import { booleansToMarks, shareMessage } from "./lib/share";
+import type { DrillLive, FeedbackFields } from "./lib/feedbackClient";
 import { primeSpeech } from "./lib/speech";
 import { loadProgress, saveProgress } from "./lib/storage";
 import { useScoreboard } from "./lib/useScoreboard";
@@ -29,12 +31,14 @@ type Screen =
       seasonNumber: number;
       seasonId: string;
       seasonTheme: string;
+      deckFile: string | null;
     }
   | {
       kind: "summary";
       mode: "practice" | "duel";
       results: AnsweredQuestion[];
       seasonTheme: string;
+      seasonId: string;
       shareText: string | null;
       elapsedLabel: string | null;
       syncNote: string | null;
@@ -70,6 +74,7 @@ export function App() {
     return practiceSeasons[0]?.id ?? "";
   });
   const [screen, setScreen] = useState<Screen>({ kind: "home" });
+  const drillLive = useRef<DrillLive | null>(null);
   const today = calendarDate(new Date(), appConfig.calendar.timeZone);
   const player = appConfig.players.find((item) => item.id === playerId) ?? appConfig.players[0];
   const scoreboard = useScoreboard({
@@ -89,14 +94,58 @@ export function App() {
   const duelDeck = useMemo(() => loadDeck(scoreboard.view.deckFile), [scoreboard.view.deckFile]);
   const deckReady = duelDeck.length > 0;
 
+  function feedbackFields(): FeedbackFields {
+    const playerId = player?.id ?? "";
+    if (!player || !practiceSeason || screen.kind === "home") {
+      return {
+        playerId,
+        screen: player && practiceSeason ? "home" : "setup",
+        mode: null,
+        seasonId: practiceSeason?.id ?? null,
+        deckFile: null,
+        phraseId: null,
+        drillType: null,
+        lastAnswer: null,
+      };
+    }
+    if (screen.kind === "drill") {
+      const question = screen.questions[screen.index];
+      const live = drillLive.current;
+      const liveAnswer =
+        question && live && live.phraseId === question.phraseId && live.response ? live.response : null;
+      return {
+        playerId,
+        screen: "drill",
+        mode: screen.mode,
+        seasonId: screen.seasonId,
+        deckFile: screen.deckFile,
+        phraseId: question?.phraseId ?? null,
+        drillType: question?.type ?? null,
+        lastAnswer: liveAnswer ?? screen.results.at(-1)?.response ?? null,
+      };
+    }
+    return {
+      playerId,
+      screen: "summary",
+      mode: screen.mode,
+      seasonId: screen.seasonId,
+      deckFile: null,
+      phraseId: null,
+      drillType: null,
+      lastAnswer: null,
+    };
+  }
+
   if (!practiceSeason || !player || practiceSeasons.length === 0) {
     return (
-      <main className="screen">
-        <h1 className="wordmark" translate="no">
-          {appConfig.name}
-        </h1>
-        <p>Add at least one player and one season with a deck in the app config.</p>
-      </main>
+      <AppFrame getFields={feedbackFields}>
+        <main className="screen">
+          <h1 className="wordmark" translate="no">
+            {appConfig.name}
+          </h1>
+          <p>Add at least one player and one season with a deck in the app config.</p>
+        </main>
+      </AppFrame>
     );
   }
 
@@ -140,6 +189,7 @@ export function App() {
       seasonNumber,
       seasonId: season.id,
       seasonTheme: season.theme,
+      deckFile: season.deckFile,
     });
   }
 
@@ -231,6 +281,7 @@ export function App() {
         mode: "practice",
         results,
         seasonTheme: screen.seasonTheme,
+        seasonId: screen.seasonId,
         shareText: null,
         elapsedLabel: null,
         syncNote: null,
@@ -261,6 +312,7 @@ export function App() {
       mode: "duel",
       results,
       seasonTheme: screen.seasonTheme,
+      seasonId: screen.seasonId,
       shareText,
       elapsedLabel: formatElapsed(elapsedMs),
       syncNote: scoreboard.phase === "local" ? "Saved on this phone." : "Sending to the shared board.",
@@ -276,49 +328,59 @@ export function App() {
     const question = screen.questions[screen.index];
     if (!question) {
       return (
-        <main className="screen">
-          <p>This set is empty.</p>
-          <button type="button" className="primary" onClick={exit}>
-            Back home
-          </button>
-        </main>
+        <AppFrame getFields={feedbackFields}>
+          <main className="screen">
+            <p>This set is empty.</p>
+            <button type="button" className="primary" onClick={exit}>
+              Back home
+            </button>
+          </main>
+        </AppFrame>
       );
     }
     return (
-      <DrillScreen
-        question={question}
-        index={screen.index}
-        total={screen.questions.length}
-        phraseLang={appConfig.voice.locale}
-        isLast={screen.index + 1 >= screen.questions.length}
-        onExit={exit}
-        onResult={finish}
-      />
+      <AppFrame getFields={feedbackFields}>
+        <DrillScreen
+          question={question}
+          index={screen.index}
+          total={screen.questions.length}
+          phraseLang={appConfig.voice.locale}
+          isLast={screen.index + 1 >= screen.questions.length}
+          onExit={exit}
+          onResult={finish}
+          onLive={(live) => {
+            drillLive.current = live;
+          }}
+        />
+      </AppFrame>
     );
   }
 
   if (screen.kind === "summary") {
     const duel = screen.mode === "duel";
     return (
-      <SummaryScreen
-        playerName={currentPlayer.name}
-        seasonTheme={screen.seasonTheme}
-        phraseLang={appConfig.voice.locale}
-        results={screen.results}
-        title={duel ? "Today's duel" : "Set complete"}
-        shareText={screen.shareText}
-        syncNote={screen.syncNote}
-        elapsedLabel={screen.elapsedLabel}
-        primaryLabel={duel ? "Back home" : "Practice again"}
-        onPrimary={duel ? exit : startPractice}
-        secondaryLabel={duel ? undefined : "Back home"}
-        onSecondary={duel ? undefined : exit}
-      />
+      <AppFrame getFields={feedbackFields}>
+        <SummaryScreen
+          playerName={currentPlayer.name}
+          seasonTheme={screen.seasonTheme}
+          phraseLang={appConfig.voice.locale}
+          results={screen.results}
+          title={duel ? "Today's duel" : "Set complete"}
+          shareText={screen.shareText}
+          syncNote={screen.syncNote}
+          elapsedLabel={screen.elapsedLabel}
+          primaryLabel={duel ? "Back home" : "Practice again"}
+          onPrimary={duel ? exit : startPractice}
+          secondaryLabel={duel ? undefined : "Back home"}
+          onSecondary={duel ? undefined : exit}
+        />
+      </AppFrame>
     );
   }
 
   return (
-    <HomeScreen
+    <AppFrame getFields={feedbackFields}>
+      <HomeScreen
       appName={appConfig.name}
       tagline={appConfig.tagline}
       practiceSeasons={practiceSeasons}
@@ -348,5 +410,6 @@ export function App() {
         void scoreboard.refresh();
       }}
     />
+    </AppFrame>
   );
 }

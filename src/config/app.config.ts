@@ -22,6 +22,27 @@ export const THEME_COLORS = [
 
 export type ThemeColor = (typeof THEME_COLORS)[number];
 
+/**
+ * Where in-app feedback is filed. The API key stays on the server.
+ * An empty projectName files the issue with no project.
+ * bugPriority 2 is High. Feature requests omit priority.
+ */
+export type FeedbackConfig = {
+  teamKey: string;
+  projectName: string;
+  labels: {
+    source: string;
+    bug: string;
+    feature: string;
+  };
+  states: {
+    bug: string;
+    feature: string;
+    fallback: string;
+  };
+  bugPriority: number;
+};
+
 export type AppConfig = {
   name: string;
   shortName: string;
@@ -47,6 +68,7 @@ export type AppConfig = {
   };
   players: PlayerConfig[];
   seasons: SeasonConfig[];
+  feedback: FeedbackConfig;
 };
 
 export const appConfig: AppConfig = {
@@ -125,4 +147,19 @@ export const appConfig: AppConfig = {
       order: 4,
     },
   ],
+  feedback: {
+    teamKey: "REM",
+    projectName: "Boda v1",
+    labels: {
+      source: "from-app",
+      bug: "Bug",
+      feature: "Feature",
+    },
+    states: {
+      bug: "Triage",
+      feature: "Backlog",
+      fallback: "Backlog",
+    },
+    bugPriority: 2,
+  },
 };

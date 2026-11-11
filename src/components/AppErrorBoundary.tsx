@@ -1,5 +1,20 @@
 import { Component, type ReactNode } from "react";
 import { appConfig } from "../config/app.config";
+import { AppFrame } from "./BugButton";
+import type { FeedbackFields } from "../lib/feedbackClient";
+
+function errorFields(): FeedbackFields {
+  return {
+    playerId: "",
+    screen: "error",
+    mode: null,
+    seasonId: null,
+    deckFile: null,
+    phraseId: null,
+    drillType: null,
+    lastAnswer: null,
+  };
+}
 
 type Props = { children: ReactNode };
 type State = { message: string | null };
@@ -18,15 +33,17 @@ export class AppErrorBoundary extends Component<Props, State> {
   render() {
     if (!this.state.message) return this.props.children;
     return (
-      <main className="screen">
-        <h1 className="wordmark" translate="no">
-          {appConfig.name}
-        </h1>
-        <p role="alert">{this.state.message}</p>
-        <button type="button" className="primary" onClick={() => window.location.reload()}>
-          Reload
-        </button>
-      </main>
+      <AppFrame getFields={errorFields}>
+        <main className="screen">
+          <h1 className="wordmark" translate="no">
+            {appConfig.name}
+          </h1>
+          <p role="alert">{this.state.message}</p>
+          <button type="button" className="primary" onClick={() => window.location.reload()}>
+            Reload
+          </button>
+        </main>
+      </AppFrame>
     );
   }
 }

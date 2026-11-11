@@ -1,6 +1,7 @@
-import { useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { categoryLabels } from "../content/categories";
 import { gradeTypedAnswer, normalizeAnswer, typeAnswerLead, type AnswerLead } from "../lib/grading";
+import type { DrillLive } from "../lib/feedbackClient";
 import type { Choice, ListenQuestion, MultipleChoiceQuestion, Question } from "../domain/types";
 import { SpeakerButton } from "./SpeakerButton";
 
@@ -136,11 +137,13 @@ function QuestionView({
   phraseLang,
   isLast,
   onResult,
+  onLive,
 }: {
   question: Question;
   phraseLang: string;
   isLast: boolean;
   onResult: (result: { correct: boolean; response: string | null }) => void;
+  onLive?: (live: DrillLive | null) => void;
 }) {
   const [pickedId, setPickedId] = useState<string | null>(null);
   const [typed, setTyped] = useState("");
@@ -148,6 +151,32 @@ function QuestionView({
   const [showHint, setShowHint] = useState(false);
   const [needAnswer, setNeedAnswer] = useState(false);
   const sent = useRef(false);
+  const onLiveRef = useRef(onLive);
+
+  useEffect(() => {
+    onLiveRef.current = onLive;
+  }, [onLive]);
+
+  useEffect(() => {
+    let response: string | null = null;
+    if (revealed) {
+      if (question.type === "typeAnswer") {
+        response = typed;
+      } else {
+        const choice = question.choices.find((item) => item.id === pickedId);
+        response = choice?.text ?? null;
+      }
+    }
+    onLiveRef.current?.({
+      phraseId: question.phraseId,
+      drillType: question.type,
+      response,
+    });
+  }, [question, pickedId, revealed, typed]);
+
+  useEffect(() => {
+    return () => onLiveRef.current?.(null);
+  }, []);
 
   const graded = question.type === "typeAnswer" ? gradeTypedAnswer(typed, question.spanish) : null;
   const correct =
@@ -328,6 +357,7 @@ export function DrillScreen({
   isLast,
   onExit,
   onResult,
+  onLive,
 }: {
   question: Question;
   index: number;
@@ -336,6 +366,7 @@ export function DrillScreen({
   isLast: boolean;
   onExit: () => void;
   onResult: (result: { correct: boolean; response: string | null }) => void;
+  onLive?: (live: DrillLive | null) => void;
 }) {
   const percent = total === 0 ? 0 : ((index + 1) / total) * 100;
 
@@ -358,6 +389,7 @@ export function DrillScreen({
         phraseLang={phraseLang}
         isLast={isLast}
         onResult={onResult}
+        onLive={onLive}
       />
     </main>
   );
