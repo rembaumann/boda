@@ -1,6 +1,8 @@
 import { allocateCounts } from "../lib/allocate";
+import { CopyResultButton } from "./ShareGrid";
 import { DRILL_TYPES, type DrillMix, type PlayerConfig, type SeasonConfig } from "../domain/types";
 import type { SessionRecord } from "../lib/progress";
+import type { BoardView } from "../lib/scoring";
 
 function mixLine(mix: DrillMix, total: number): string {
   const counts = allocateCounts(mix, total, DRILL_TYPES);
@@ -16,38 +18,57 @@ function isStandalone(): boolean {
 export function HomeScreen({
   appName,
   tagline,
-  seasons,
-  season,
+  practiceSeasons,
+  practiceSeason,
   phraseCount,
   questionsPerSet,
-  seasonPointsTarget,
   goalLabel,
   goalNote,
+  board,
+  statusText,
+  deckReady,
+  canPlay,
+  canRetry,
+  showReload,
+  shareText,
   players,
   selectedPlayerId,
   lastSession,
   onSelectPlayer,
   onSelectSeason,
-  onStart,
+  onPractice,
+  onDuel,
+  onRetry,
+  onReload,
 }: {
   appName: string;
   tagline: string;
-  seasons: readonly SeasonConfig[];
-  season: SeasonConfig;
+  practiceSeasons: readonly SeasonConfig[];
+  practiceSeason: SeasonConfig;
   phraseCount: number;
   questionsPerSet: number;
-  seasonPointsTarget: number;
   goalLabel: string;
   goalNote: string;
+  board: BoardView;
+  statusText: string;
+  deckReady: boolean;
+  canPlay: boolean;
+  canRetry: boolean;
+  showReload: boolean;
+  shareText: string | null;
   players: readonly PlayerConfig[];
   selectedPlayerId: string;
   lastSession: SessionRecord | null;
   onSelectPlayer: (id: string) => void;
   onSelectSeason: (id: string) => void;
-  onStart: () => void;
+  onPractice: () => void;
+  onDuel: () => void;
+  onRetry: () => void;
+  onReload: () => void;
 }) {
   const standalone = isStandalone();
-  const seasonNumber = String(season.order).padStart(2, "0");
+  const seasonNumber = String(board.seasonNumber).padStart(2, "0");
+  const duelFirst = canPlay || canRetry;
 
   return (
     <main className="screen screen-home" data-screen="home">
@@ -58,14 +79,14 @@ export function HomeScreen({
         <p className="tagline">{tagline}</p>
       </header>
 
-      {seasons.length > 1 ? (
-        <div className="season-switch" role="group" aria-label="Season">
-          {seasons.map((item) => (
+      {practiceSeasons.length > 1 ? (
+        <div className="season-switch" role="group" aria-label="Practice season">
+          {practiceSeasons.map((item) => (
             <button
               key={item.id}
               type="button"
-              className={item.id === season.id ? "chip is-selected" : "chip"}
-              aria-pressed={item.id === season.id}
+              className={item.id === practiceSeason.id ? "chip is-selected" : "chip"}
+              aria-pressed={item.id === practiceSeason.id}
               onClick={() => onSelectSeason(item.id)}
             >
               {item.theme}
@@ -74,9 +95,9 @@ export function HomeScreen({
         </div>
       ) : null}
 
-      <section className="season-card" aria-label={season.theme}>
+      <section className="season-card" aria-label="Scoreboard" data-scoreboard>
         <p className="season-kicker">Season {seasonNumber}</p>
-        <h2 className="season-title">{season.theme}</h2>
+        <h2 className="season-title">{board.theme}</h2>
         <dl className="stats">
           <div>
             <dt>Phrases</dt>
@@ -88,15 +109,33 @@ export function HomeScreen({
           </div>
           <div>
             <dt>{goalLabel}</dt>
-            <dd>{seasonPointsTarget}</dd>
+            <dd>{board.target}</dd>
           </div>
         </dl>
+        <ul className="standings">
+          {board.standings.map((row) => (
+            <li key={row.id} className="standing">
+              <span className="standing-name">{row.name}</span>
+              <span className="standing-score">
+                {row.points}
+                <span className="standing-target">/{board.target}</span>
+                <span className="trophy-count">
+                  {row.trophies} {row.trophies === 1 ? "trophy" : "trophies"}
+                </span>
+              </span>
+            </li>
+          ))}
+        </ul>
+        <p className="today-line">{board.todayLabel}</p>
         <p className="goal-note">{goalNote}</p>
+        {deckReady ? null : <p className="goal-note">This season's phrases aren't in the app yet.</p>}
+        {practiceSeason.theme !== board.theme ? <p className="quiet">Practice uses {practiceSeason.theme}.</p> : null}
+        <p className="quiet">{statusText}</p>
       </section>
 
       <section className="players">
-        <h2 className="section-title">Who's practicing?</h2>
-        <div className="player-grid" role="group" aria-label="Who's practicing?">
+        <h2 className="section-title">Who's playing?</h2>
+        <div className="player-grid" role="group" aria-label="Who's playing?">
           {players.map((player) => {
             const selected = player.id === selectedPlayerId;
             return (
@@ -122,10 +161,26 @@ export function HomeScreen({
             Last set · {lastSession.correctCount}/{lastSession.total}
           </p>
         ) : null}
-        <button type="button" className="primary" onClick={onStart}>
+        {canPlay ? (
+          <button type="button" className="primary" onClick={onDuel}>
+            Play today's duel
+          </button>
+        ) : null}
+        {canRetry ? (
+          <button type="button" className="primary" onClick={onRetry}>
+            Share today's result
+          </button>
+        ) : null}
+        <button type="button" className={duelFirst ? "secondary" : "primary"} onClick={onPractice}>
           Start practice
         </button>
-        <p className="quiet">Works offline after the first visit.</p>
+        {shareText ? <CopyResultButton text={shareText} /> : null}
+        {showReload ? (
+          <button type="button" className="text-button wide" onClick={onReload}>
+            Try the board again
+          </button>
+        ) : null}
+        <p className="quiet">Practice works offline after the first visit.</p>
         {standalone ? null : (
           <p className="quiet">On iPhone, share this page and choose Add to Home Screen.</p>
         )}

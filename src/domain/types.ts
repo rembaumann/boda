@@ -83,15 +83,14 @@ export type PlayerConfig = {
 export type SeasonConfig = {
   id: string;
   theme: string;
-  deckFile: string;
+  /** Null until that season's phrase deck is in the repo. */
+  deckFile: string | null;
   order: number;
 };
 
-/**
- * Ticket 2 slot. A duel is one shared daily set of phrase ids, scored per player.
- * This version does not create or sync duels.
- */
+/** One shared daily set. Scores are correct counts for players who have finished. */
 export type DailyDuel = {
+  seasonNumber: number;
   seasonId: string;
   date: string;
   phraseIds: readonly string[];

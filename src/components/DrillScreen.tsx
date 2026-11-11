@@ -30,7 +30,7 @@ function DrillHeader({
         {index + 1} of {total}
       </p>
       {confirming ? (
-        <div className="confirm" role="group" aria-label="End practice">
+        <div className="confirm" role="group" aria-label="End this set">
           <p>End this set? It won't be saved.</p>
           <div className="confirm-actions">
             <button type="button" className="text-button" onClick={() => setConfirming(false)}>

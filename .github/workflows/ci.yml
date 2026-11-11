@@ -19,7 +19,8 @@ jobs:
     # Required status check name. Branch protection must require "CI".
     name: CI
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    # Room for the browser download, a library install if the runner needs one, and the smoke test.
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -45,8 +46,44 @@ jobs:
       - name: Production build
         run: npm run build
 
+      - name: Resolve Playwright version
+        id: playwright-version
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ steps.playwright-version.outputs.version }}
+
+      # Download the browser without apt. --with-deps hangs when the Ubuntu
+      # mirrors are slow, and a retry then collides with the lock apt still holds.
       - name: Install Playwright browser
-        run: npx playwright install --with-deps chromium
+        timeout-minutes: 5
+        run: npx playwright install chromium
+
+      - name: Ensure Chromium can launch
+        timeout-minutes: 6
+        run: |
+          launch='import { chromium } from "@playwright/test"; const browser = await chromium.launch(); await browser.close();'
+          if node --input-type=module -e "$launch"; then
+            echo "Chromium launched with the libraries already on the runner."
+            exit 0
+          fi
+          echo "Installing system libraries for Chromium."
+          for attempt in 1 2 3; do
+            if sudo lsof /var/lib/apt/lists/lock /var/lib/dpkg/lock-frontend >/dev/null 2>&1; then
+              echo "Waiting for apt to release its lock."
+              sleep 5
+              continue
+            fi
+            if npx playwright install-deps chromium; then
+              node --input-type=module -e "$launch"
+              exit 0
+            fi
+            sleep $((attempt * 5))
+          done
+          exit 1
 
       - name: End-to-end smoke test
         run: npm run test:e2e

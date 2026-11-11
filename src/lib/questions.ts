@@ -19,6 +19,8 @@ export type CreateSessionInput = {
   mix: DrillMix;
   count: number;
   difficultyMix: Record<Difficulty, number>;
+  /** When set, the set uses these phrases in this order instead of drawing new ones. */
+  phraseIds?: readonly string[];
   rng?: Rng;
 };
 
@@ -135,7 +137,7 @@ export function buildQuestion(
   return question;
 }
 
-function pickPhrases(
+export function pickPhrases(
   deck: readonly Phrase[],
   count: number,
   difficultyMix: Record<Difficulty, number>,
@@ -186,12 +188,29 @@ function pickPhrases(
   return shuffle(picked, rng).slice(0, count);
 }
 
+function phrasesById(deck: readonly Phrase[], ids: readonly string[], count: number): Phrase[] {
+  if (ids.length !== count) {
+    throw new Error("The daily set size doesn't match the question count.");
+  }
+  const byId = new Map(deck.map((phrase) => [phrase.id, phrase]));
+  const seen = new Set<string>();
+  return ids.map((id) => {
+    if (seen.has(id)) throw new Error(`Duplicate phrase "${id}" in the daily set.`);
+    seen.add(id);
+    const phrase = byId.get(id);
+    if (!phrase) throw new Error(`Missing phrase "${id}" in the deck.`);
+    return phrase;
+  });
+}
+
 export function createSession(input: CreateSessionInput): Question[] {
   if (!Number.isInteger(input.count) || input.count < 0) {
     throw new Error("Question count must be a non-negative integer.");
   }
   const rng = input.rng ?? Math.random;
-  const phrases = pickPhrases(input.deck, input.count, input.difficultyMix, rng);
+  const phrases = input.phraseIds
+    ? phrasesById(input.deck, input.phraseIds, input.count)
+    : pickPhrases(input.deck, input.count, input.difficultyMix, rng);
   if (input.count > 0 && phrases.length < input.count) {
     throw new Error("The deck doesn't have enough phrases for this set.");
   }

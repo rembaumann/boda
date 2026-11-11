@@ -34,6 +34,10 @@ export type AppConfig = {
     locale: string;
     fallbackLanguage: string;
   };
+  /** Both phones use this calendar, so the daily set rolls over at the same local midnight. */
+  calendar: {
+    timeZone: string;
+  };
   session: {
     questionsPerSet: number;
     seasonPointsTarget: number;
@@ -71,6 +75,9 @@ export const appConfig: AppConfig = {
     locale: "es-MX",
     fallbackLanguage: "es",
   },
+  calendar: {
+    timeZone: "America/New_York",
+  },
   session: {
     questionsPerSet: 10,
     seasonPointsTarget: 21,
@@ -95,9 +102,27 @@ export const appConfig: AppConfig = {
   seasons: [
     {
       id: "scouting-mexico-city",
-      theme: "Scouting Trip: Mexico City",
+      theme: "Scouting Trip",
       deckFile: "scouting-mexico-city",
       order: 1,
+    },
+    {
+      id: "vendors-planner",
+      theme: "Vendors & Planner",
+      deckFile: null,
+      order: 2,
+    },
+    {
+      id: "family-guests",
+      theme: "Family & Guests",
+      deckFile: null,
+      order: 3,
+    },
+    {
+      id: "toast-vows",
+      theme: "Toast & Vows",
+      deckFile: null,
+      order: 4,
     },
   ],
 };
