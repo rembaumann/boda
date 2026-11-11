@@ -192,6 +192,71 @@ button {
   font-size: 0.92rem;
 }
 
+.standings {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+}
+
+.standing {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 8px 0;
+  border-top: 1px solid var(--line);
+}
+
+.standing-name {
+  font-weight: 600;
+}
+
+.standing-score {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.standing-target,
+.trophy-count {
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.today-line {
+  margin: 12px 0 0;
+  font-weight: 600;
+}
+
+.share-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.share-grid {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: var(--background);
+  font-family: "Outfit", "Avenir Next", "Segoe UI", sans-serif;
+  font-size: 1.15rem;
+  line-height: 1.45;
+  letter-spacing: 0.08em;
+  white-space: pre-wrap;
+}
+
+.share-fallback {
+  min-height: 7rem;
+  font-size: 0.95rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
 .players {
   margin-top: 22px;
 }
@@ -256,6 +321,7 @@ button {
 }
 
 .primary,
+.secondary,
 .text-button,
 .choice,
 .speaker {
@@ -263,6 +329,7 @@ button {
 }
 
 .primary:active,
+.secondary:active,
 .text-button:active,
 .choice:active,
 .speaker:active {
@@ -283,6 +350,15 @@ button {
   width: auto;
   min-height: 44px;
   padding: 0 16px;
+}
+
+.secondary {
+  width: 100%;
+  min-height: 52px;
+  border: 1.5px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  font-weight: 600;
 }
 
 .text-button {
@@ -680,6 +756,7 @@ button {
 
 @media (prefers-reduced-motion: reduce) {
   .primary,
+  .secondary,
   .text-button,
   .choice,
   .speaker {

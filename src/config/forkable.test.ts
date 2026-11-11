@@ -35,8 +35,11 @@ describe("forkable copy", () => {
   it("keeps couple-specific strings in config and content, not in the interface", () => {
     const terms = [
       ...appConfig.players.flatMap((player) => [player.name, player.note, player.id]),
-      ...appConfig.seasons.flatMap((season) => [season.theme, season.id, season.deckFile]),
+      ...appConfig.seasons.flatMap((season) =>
+        [season.theme, season.id, season.deckFile].filter((term): term is string => typeof term === "string"),
+      ),
       appConfig.voice.locale,
+      appConfig.calendar.timeZone,
       appConfig.tagline,
       appConfig.description,
       appConfig.storageKey,

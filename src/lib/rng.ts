@@ -7,6 +7,16 @@ export function unitInterval(rng: Rng): number {
   return value;
 }
 
+/** FNV-1a, so a date and season become a stable 32-bit seed. */
+export function hashSeed(text: string): number {
+  let hash = 0x811c9dc5;
+  for (let index = 0; index < text.length; index += 1) {
+    hash ^= text.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return hash >>> 0;
+}
+
 export function mulberry32(seed: number): Rng {
   let state = seed >>> 0;
   return () => {

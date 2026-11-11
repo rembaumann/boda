@@ -22,10 +22,17 @@ describe("season 1 deck", () => {
     for (const phrase of phrases) expect(phrase.es).not.toMatch(SPAIN_MARKERS);
   });
 
-  it("is the deck named by the season list", () => {
-    for (const season of appConfig.seasons) {
-      expect(getDeck(season.deckFile).length).toBeGreaterThan(0);
-    }
+  it("is the deck named by the first season, with later themes waiting on decks", () => {
+    expect(appConfig.seasons.map((season) => season.theme)).toEqual([
+      "Scouting Trip",
+      "Vendors & Planner",
+      "Family & Guests",
+      "Toast & Vows",
+    ]);
+    expect(appConfig.seasons.map((season) => season.order)).toEqual([1, 2, 3, 4]);
+    const ready = appConfig.seasons.filter((season) => season.deckFile);
+    expect(ready).toHaveLength(1);
+    expect(getDeck(ready[0]?.deckFile ?? "").length).toBeGreaterThan(0);
     expect(appConfig.voice.locale).toBe("es-MX");
     expect(appConfig.session.questionsPerSet).toBe(10);
     expect(appConfig.session.seasonPointsTarget).toBe(21);
