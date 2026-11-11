@@ -1,2 +1,2 @@
--- Season rows are inserted by the daily duel migration.
+-- Player and season rows are inserted by the daily duel migration.
 -- This file is intentionally empty so `supabase db reset` has a seed path.

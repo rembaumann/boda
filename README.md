@@ -81,7 +81,7 @@ Nothing about a particular couple is written into the screens. Edit the files be
 - `seasons` — id, theme, `deckFile` (the JSON file name without `.json`, or `null` until that deck exists), and `order`. The default list is Scouting Trip, Vendors & Planner, Family & Guests, then Toast & Vows. After the last theme, the next season starts again at the first theme.
 - `storageKey` — the localStorage key, so two forks on one phone don’t overwrite each other.
 
-Player ids in the config have to match the insert check in the migration: lowercase letters, digits, and hyphens. If you change season ids or themes before applying the migration, edit the `insert into public.seasons` rows in that file so they match. The app reads themes and the points target from this config, not from the database.
+Player ids in the config have to match a row in the migration's `players` table: lowercase letters, digits, and hyphens. If you change player ids, player names, season ids, or themes before applying the migration, edit the `insert into public.players` and `insert into public.seasons` rows in that file so they match. The app reads player names, themes, and the points target from this config, not from the database.
 
 ### Phrase decks
 
@@ -123,7 +123,7 @@ When a player's season points reach `seasonPointsTarget`, that player wins the s
 
 After a duel, the summary shows a Wordle-style grid (green for right, black for a miss) and copies it without the phrases. Practice does not add a season point. A duel does update the on-phone practice history.
 
-The shared board is Supabase. [`supabase/migrations`](supabase/migrations) creates `seasons` and `daily_results`. Row level security lets the anon key read both tables and insert a result whose fields match the checks (one row per player per day, marks that match the score, a sane elapsed time). Anon cannot update or delete. The app subscribes to new results and also reloads when the phone comes back to the foreground.
+The shared board is Supabase. [`supabase/migrations`](supabase/migrations) creates `players`, `seasons`, and `daily_results`. Row level security lets the anon key read those tables and insert a result only for a player in the allowlist, when the other fields match the checks (one row per player per day, marks that match the score, a sane elapsed time). Anon cannot add a player, and cannot update or delete. The app subscribes to new results and also reloads when the phone comes back to the foreground.
 
 Without the env vars, the scoreboard says the duel is only on that phone. With a bad or missing migration, the duel waits and practice still runs.
 

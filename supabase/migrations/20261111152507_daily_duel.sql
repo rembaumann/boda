@@ -1,12 +1,13 @@
--- Daily duel results and the season theme catalog.
--- Theme rows match src/config/app.config.ts. The running app reads themes,
--- player names, and the points target from that config so a fork can change
--- them without editing screens. Keep this seed in step with the config before
--- applying the file.
+-- Daily duel results, the player allowlist, and the season theme catalog.
+-- Player rows and theme rows match src/config/app.config.ts. The running app
+-- reads themes, player names, and the points target from that config so a
+-- fork can change them without editing screens. Keep these seeds in step
+-- with the config before applying the file.
 --
--- Anon (the public app key) can read both tables and insert a daily result
--- whose fields pass the checks below. Anon cannot update or delete anything.
--- There is no password: do not grant the service role key to the app.
+-- Anon (the public app key) can read every table and insert a daily result
+-- only for a player in the allowlist, and only when the other fields pass
+-- the checks below. Anon cannot update or delete anything, and cannot add a
+-- player. There is no password: do not grant the service role key to the app.
 
 create table public.seasons (
   id text primary key,
@@ -28,9 +29,22 @@ insert into public.seasons (id, theme, sort_order, deck_file) values
   ('family-guests', 'Family & Guests', 3, null),
   ('toast-vows', 'Toast & Vows', 4, null);
 
+-- Player rows match src/config/app.config.ts. The running app reads player
+-- names from that config so a fork can change them without editing screens.
+-- Keep this seed in step with the config before applying the file.
+create table public.players (
+  id text primary key,
+  display_name text not null,
+  constraint players_id_format check (id ~ '^[a-z0-9](?:[a-z0-9-]{0,30}[a-z0-9])?$')
+);
+
+insert into public.players (id, display_name) values
+  ('rem', 'Rem'),
+  ('shannon', 'Shannon');
+
 create table public.daily_results (
   id uuid primary key default gen_random_uuid(),
-  player_id text not null,
+  player_id text not null references public.players (id),
   season_id text not null references public.seasons (id),
   season_number integer not null,
   played_on date not null,
@@ -59,22 +73,34 @@ create index daily_results_season_id_idx on public.daily_results (season_id);
 
 comment on table public.seasons is
   'Season theme catalog. Display copy and the race target live in app config.';
+comment on table public.players is
+  'Players who may post a daily result. Display names in the app live in app config.';
 comment on table public.daily_results is
   'One finished daily duel per player per calendar day. Append-only for anon.';
 
 alter table public.seasons enable row level security;
 alter table public.seasons force row level security;
+alter table public.players enable row level security;
+alter table public.players force row level security;
 alter table public.daily_results enable row level security;
 alter table public.daily_results force row level security;
 
 revoke all on table public.seasons from public, anon, authenticated;
+revoke all on table public.players from public, anon, authenticated;
 revoke all on table public.daily_results from public, anon, authenticated;
 
 grant select on table public.seasons to anon, authenticated;
+grant select on table public.players to anon, authenticated;
 grant select, insert on table public.daily_results to anon, authenticated;
 
 create policy seasons_select
   on public.seasons
+  for select
+  to anon, authenticated
+  using (true);
+
+create policy players_select
+  on public.players
   for select
   to anon, authenticated
   using (true);
