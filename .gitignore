@@ -9,3 +9,4 @@ dev-dist
 .vercel
 playwright-report
 test-results
+.api-check

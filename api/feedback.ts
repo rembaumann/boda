@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { handleFeedback } from "../src/server/feedbackHandler";
+import { handleFeedback } from "../src/server/feedbackHandler.js";
 
 type RequestWithBody = IncomingMessage & { body?: unknown };
 

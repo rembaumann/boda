@@ -38,7 +38,7 @@ npm run preview
 
 ## Running tests
 
-GitHub Actions runs the same checks on every pull request and every push to `main`: install, lint, typecheck, unit tests, a production build, a scan that the built client does not contain the Linear API key, and one end-to-end smoke test.
+GitHub Actions runs the same checks on every pull request and every push to `main`: install, lint, typecheck, a check that the feedback function loads under Node ESM, unit tests, a production build, a scan that the built client does not contain the Linear API key, and one end-to-end smoke test.
 
 ```bash
 npm run lint
@@ -70,6 +70,8 @@ The home screen has a **Suggest a feature** card under the practice button. A bu
 The function files a Linear issue. Bugs are labeled `from-app` and `Bug`, start in Triage, and are High priority. If the team has no Triage state, they start in Backlog. Feature requests are labeled `from-app` and `Feature`, start in Backlog, and have no priority. The issue body is the person's exact words plus who sent it, the screen, and, for a bug during a drill, the deck, phrase, drill type, and last answer. It also includes the commit SHA when Vercel provides one, the user agent, whether the phone was online, and the time.
 
 If `LINEAR_API_KEY` is missing, the form says feedback isn't configured and the rest of the app still runs. Submissions are not queued offline.
+
+The function is Node ESM. Its relative imports end in `.js`, which is the file Vercel emits. Node will not load an extensionless import. `npm run check:api` transpiles that graph without bundling it and imports the result with Node.
 
 ### Point a fork at your own Linear workspace
 

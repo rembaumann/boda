@@ -1,5 +1,5 @@
-import { appConfig, type FeedbackConfig } from "../config/app.config";
-import { DESCRIPTION_MAX, DESCRIPTION_MIN } from "../lib/feedbackClient";
+import { appConfig, type FeedbackConfig } from "../config/app.config.js";
+import { DESCRIPTION_MAX, DESCRIPTION_MIN } from "../lib/feedbackClient.js";
 
 export const SUBMISSIONS_PER_HOUR = 10;
 export const SUBMISSION_WINDOW_MS = 60 * 60 * 1000;

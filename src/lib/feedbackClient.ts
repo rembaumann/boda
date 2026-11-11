@@ -1,4 +1,4 @@
-import { appConfig } from "../config/app.config";
+import { appConfig } from "../config/app.config.js";
 
 export const DESCRIPTION_MIN = 5;
 export const DESCRIPTION_MAX = 1000;

@@ -40,6 +40,9 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: API function boots under Node ESM
+        run: npm run check:api
+
       - name: Unit tests
         run: npm test
 
