@@ -1,20 +1,6 @@
 import { Component, type ReactNode } from "react";
 import { appConfig } from "../config/app.config";
-import { AppFrame } from "./BugButton";
-import type { FeedbackFields } from "../lib/feedbackClient";
-
-function errorFields(): FeedbackFields {
-  return {
-    playerId: "",
-    screen: "error",
-    mode: null,
-    seasonId: null,
-    deckFile: null,
-    phraseId: null,
-    drillType: null,
-    lastAnswer: null,
-  };
-}
+import { AppFrame } from "./AppFrame";
 
 type Props = { children: ReactNode };
 type State = { message: string | null };
@@ -33,7 +19,7 @@ export class AppErrorBoundary extends Component<Props, State> {
   render() {
     if (!this.state.message) return this.props.children;
     return (
-      <AppFrame getFields={errorFields}>
+      <AppFrame>
         <main className="screen">
           <h1 className="wordmark" translate="no">
             {appConfig.name}

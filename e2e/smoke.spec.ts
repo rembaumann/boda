@@ -1,4 +1,4 @@
-import { expect, test, type Locator, type Page } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 
 const questionsPerSet = 10;
 
@@ -9,59 +9,80 @@ function overlaps(
   return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
 }
 
-function visibleBox(
-  box: { x: number; y: number; width: number; height: number },
-  clip: { x: number; y: number; width: number; height: number },
-): { x: number; y: number; width: number; height: number } | null {
-  const x = Math.max(box.x, clip.x);
-  const y = Math.max(box.y, clip.y);
-  const right = Math.min(box.x + box.width, clip.x + clip.width);
-  const bottom = Math.min(box.y + box.height, clip.y + clip.height);
-  if (right - x <= 0 || bottom - y <= 0) return null;
-  return { x, y, width: right - x, height: bottom - y };
+async function expectNoFixedOrSticky(page: Page): Promise<void> {
+  const covering = await page.evaluate(() =>
+    [...document.body.querySelectorAll("*")]
+      .filter((el) => {
+        const position = getComputedStyle(el).position;
+        return position === "fixed" || position === "sticky";
+      })
+      .map((el) => el.tagName.toLowerCase()),
+  );
+  expect(covering).toEqual([]);
 }
 
-async function expectBugButtonClear(page: Page, bug: Locator): Promise<void> {
-  const bugBox = await bug.boundingBox();
-  const scrollBox = await page.locator(".app-scroll").boundingBox();
-  const viewport = page.viewportSize();
-  expect(bugBox).not.toBeNull();
-  expect(scrollBox).not.toBeNull();
-  expect(viewport).not.toBeNull();
-  if (!bugBox || !scrollBox || !viewport) return;
-  expect(bugBox.x).toBeGreaterThan(viewport.width / 2);
-  expect(bugBox.y).toBeGreaterThan(viewport.height - 160);
-  expect(bugBox.x + bugBox.width).toBeLessThanOrEqual(viewport.width);
-  expect(bugBox.y + bugBox.height).toBeLessThanOrEqual(viewport.height);
-  const controls = page.locator("[data-choice], .question .primary, .answer-input, .speaker");
+async function expectControlsReachable(page: Page): Promise<void> {
+  const controls = page.locator(".screen").locator("button, a, input, textarea");
   const count = await controls.count();
   for (let index = 0; index < count; index += 1) {
-    const box = await controls.nth(index).boundingBox();
-    if (!box) continue;
-    const visible = visibleBox(box, scrollBox);
-    if (!visible) continue;
-    expect(overlaps(bugBox, visible)).toBe(false);
+    const control = controls.nth(index);
+    if ((await control.getAttribute("aria-hidden")) === "true") continue;
+    if (!(await control.isVisible())) continue;
+    await control.scrollIntoViewIfNeeded();
+    const box = await control.boundingBox();
+    const scrollBox = await page.locator(".app-scroll").boundingBox();
+    const viewport = page.viewportSize();
+    expect(box).not.toBeNull();
+    expect(scrollBox).not.toBeNull();
+    expect(viewport).not.toBeNull();
+    if (!box || !scrollBox || !viewport) return;
+    expect(box.x).toBeGreaterThanOrEqual(-2);
+    expect(box.y).toBeGreaterThanOrEqual(scrollBox.y - 2);
+    expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 2);
+    expect(box.y + box.height).toBeLessThanOrEqual(Math.min(viewport.height, scrollBox.y + scrollBox.height) + 2);
   }
 }
 
-async function expectFullyClearOfBug(page: Page, target: Locator): Promise<void> {
-  await target.scrollIntoViewIfNeeded();
-  const box = await target.boundingBox();
-  const bugBox = await page.locator("[data-bug-button]").boundingBox();
-  const scrollBox = await page.locator(".app-scroll").boundingBox();
-  const viewport = page.viewportSize();
-  expect(box).not.toBeNull();
-  expect(bugBox).not.toBeNull();
-  expect(scrollBox).not.toBeNull();
-  expect(viewport).not.toBeNull();
-  if (!box || !bugBox || !scrollBox || !viewport) return;
-  expect(box.y).toBeGreaterThanOrEqual(-1);
-  expect(box.x).toBeGreaterThanOrEqual(-1);
-  expect(box.y + box.height).toBeLessThanOrEqual(viewport.height + 1);
-  expect(box.x + box.width).toBeLessThanOrEqual(viewport.width + 1);
-  expect(box.y).toBeGreaterThanOrEqual(scrollBox.y - 1);
-  expect(box.y + box.height).toBeLessThanOrEqual(scrollBox.y + scrollBox.height + 1);
-  expect(overlaps(box, bugBox)).toBe(false);
+async function expectNoOverlaps(page: Page): Promise<void> {
+  const boxes = await page.evaluate(() => {
+    const scroll = document.querySelector(".app-scroll");
+    if (!(scroll instanceof HTMLElement)) return [];
+    const clip = scroll.getBoundingClientRect();
+    const found: { x: number; y: number; width: number; height: number }[] = [];
+    for (const node of scroll.querySelectorAll("button, a, input, textarea")) {
+      if (!(node instanceof HTMLElement)) continue;
+      if (node.getAttribute("aria-hidden") === "true") continue;
+      const style = getComputedStyle(node);
+      if (style.display === "none" || style.visibility === "hidden") continue;
+      const rect = node.getBoundingClientRect();
+      const x = Math.max(rect.left, clip.left);
+      const y = Math.max(rect.top, clip.top);
+      const right = Math.min(rect.right, clip.right);
+      const bottom = Math.min(rect.bottom, clip.bottom);
+      if (right - x < 1 || bottom - y < 1) continue;
+      found.push({ x, y, width: right - x, height: bottom - y });
+    }
+    return found;
+  });
+  for (let left = 0; left < boxes.length; left += 1) {
+    for (let right = left + 1; right < boxes.length; right += 1) {
+      const a = boxes[left];
+      const b = boxes[right];
+      if (!a || !b) continue;
+      expect(overlaps(a, b)).toBe(false);
+    }
+  }
+}
+
+async function expectScreenClear(page: Page): Promise<void> {
+  await expectNoFixedOrSticky(page);
+  await expectNoOverlaps(page);
+  await expectControlsReachable(page);
+  await page.locator(".app-scroll").evaluate((el) => {
+    el.scrollTop = el.scrollHeight;
+  });
+  await expectNoOverlaps(page);
+  await expectNoFixedOrSticky(page);
 }
 
 async function answerQuestion(page: Page, index: number): Promise<void> {
@@ -83,7 +104,7 @@ async function answerQuestion(page: Page, index: number): Promise<void> {
   await page.getByRole("button", { name: advance, exact: true }).click();
 }
 
-test("keeps the last home card clear of the bug button", async ({ page }) => {
+test("feedback opens in the page and nothing covers the controls", async ({ page }) => {
   for (const viewport of [
     { width: 393, height: 852 },
     { width: 375, height: 667 },
@@ -91,24 +112,38 @@ test("keeps the last home card clear of the bug button", async ({ page }) => {
     await page.setViewportSize(viewport);
     await page.goto("/");
     await expect(page.locator("[data-screen='home']")).toBeVisible();
-    const card = page.locator(".player").last();
-    await expect(card).toBeVisible();
-    await expectFullyClearOfBug(page, card);
-    await expectFullyClearOfBug(page, page.locator(".suggest-card"));
+    await expect(page.locator("[data-bug-button]")).toHaveCount(0);
+    await expectScreenClear(page);
+
+    const send = page.getByRole("button", { name: "Send feedback", exact: true });
+    await send.click();
+    const homeForm = page.locator("[data-send-feedback]");
+    await expect(homeForm.getByLabel("Description")).toBeVisible();
+    await expect(homeForm.locator("form")).toHaveAttribute("data-feedback-kind", "bug");
+    await homeForm.getByRole("button", { name: "Idea", exact: true }).click();
+    await expect(homeForm.locator("form")).toHaveAttribute("data-feedback-kind", "feature");
+    await expectScreenClear(page);
 
     await page.getByRole("button", { name: "Start practice", exact: true }).click();
     await expect(page.locator("[data-screen='drill']")).toBeVisible();
     const bug = page.getByRole("button", { name: "Report a bug" });
-    await expectBugButtonClear(page, bug);
-    const drillTail = page.locator("[data-choice], .answer-input, .question .primary").last();
-    await expectFullyClearOfBug(page, drillTail);
+    await expect(bug).toBeVisible();
+    await expectScreenClear(page);
+    await bug.click();
+    const drillForm = page.locator("[data-bug-sheet]");
+    await expect(drillForm.getByRole("heading", { name: "Report a bug", exact: true })).toBeVisible();
+    await expect(drillForm.locator("form")).toHaveAttribute("data-feedback-kind", "bug");
+    await expectScreenClear(page);
 
     await page.goto("/");
     await page.getByRole("button", { name: "Play today's duel", exact: true }).click();
     await expect(page.locator("[data-screen='drill']")).toBeVisible();
-    await expectBugButtonClear(page, bug);
-    const duelTail = page.locator("[data-choice], .answer-input, .question .primary, .speaker").last();
-    await expectFullyClearOfBug(page, duelTail);
+    const duelBug = page.getByRole("button", { name: "Report a bug" });
+    await expect(duelBug).toBeVisible();
+    await expectScreenClear(page);
+    await duelBug.click();
+    await expect(page.locator("[data-bug-sheet] form")).toHaveAttribute("data-feedback-kind", "bug");
+    await expectScreenClear(page);
   }
 });
 
@@ -118,7 +153,7 @@ test("opens the app, picks a player, and finishes a 10-question set", async ({ p
   await page.goto("/");
   await expect(page.locator("[data-screen='home']")).toBeVisible();
   await expect(page.getByRole("heading", { name: "boda", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Report a bug" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Send feedback", exact: true })).toBeVisible();
   await expect(page.locator("[data-scoreboard]")).toBeVisible();
   await expect(page.getByRole("button", { name: "Play today's duel", exact: true })).toBeVisible();
 
@@ -133,7 +168,6 @@ test("opens the app, picks a player, and finishes a 10-question set", async ({ p
   }
 
   await expect(page.locator("[data-screen='summary']")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Report a bug" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Set complete", exact: true })).toBeVisible();
   await expect(page.locator(".for")).toHaveText("Shannon");
   await expect(page.locator("[data-score]")).toHaveAttribute("data-score", /^\d+\/10$/);
@@ -152,7 +186,6 @@ test("plays today's duel and shows a share grid", async ({ page }) => {
   }
 
   await expect(page.locator("[data-screen='summary']")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Report a bug" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Today's duel", exact: true })).toBeVisible();
   const grid = await page.locator("[data-share-grid]").innerText();
   expect([...grid].filter((symbol) => symbol === "🟩" || symbol === "⬛")).toHaveLength(questionsPerSet);
@@ -225,11 +258,10 @@ test("suggests a feature from home and files one bug from a drill", async ({ pag
   await expect(bug).toBeVisible();
   drillType = (await page.locator("[data-drill]").getAttribute("data-drill")) ?? "";
   expect(drillType).not.toBe("");
-  await expectBugButtonClear(page, bug);
 
   await bug.click();
-  const sheet = page.getByRole("dialog", { name: "Report a bug" });
-  await expect(sheet).toBeVisible();
+  const sheet = page.locator("[data-bug-sheet]");
+  await expect(sheet.getByRole("heading", { name: "Report a bug", exact: true })).toBeVisible();
   await sheet.getByLabel("Description").fill("The speaker button did nothing.");
   await page.evaluate(() => {
     const form = document.querySelector("[data-bug-sheet] form");
@@ -251,8 +283,8 @@ test("keeps a bug report when sending fails", async ({ page }) => {
     }),
   );
   await page.goto("/");
-  await page.getByRole("button", { name: "Report a bug" }).click();
-  const sheet = page.getByRole("dialog", { name: "Report a bug" });
+  await page.getByRole("button", { name: "Send feedback", exact: true }).click();
+  const sheet = page.locator("[data-send-feedback]");
   const field = sheet.getByLabel("Description");
   await field.fill("The score did not update.");
   await sheet.getByRole("button", { name: "Submit", exact: true }).click();
@@ -268,8 +300,8 @@ test("says to retry a bug report when offline", async ({ page, context }) => {
   });
   await page.goto("/");
   await context.setOffline(true);
-  await page.getByRole("button", { name: "Report a bug" }).click();
-  const sheet = page.getByRole("dialog", { name: "Report a bug" });
+  await page.getByRole("button", { name: "Send feedback", exact: true }).click();
+  const sheet = page.locator("[data-send-feedback]");
   const field = sheet.getByLabel("Description");
   await field.fill("The board never loaded.");
   await sheet.getByRole("button", { name: "Submit", exact: true }).click();
