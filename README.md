@@ -61,7 +61,7 @@ The app is a static Vite build. Vercel detects that with no project settings to 
 4. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` from [`.env.example`](.env.example). Use the anon public key, never the service role key. Redeploy after changing them, because Vite bakes them into the build.
 5. Add `LINEAR_API_KEY` for in-app feedback. That key is read only by the `/api/feedback` function. Do not prefix it with `VITE_`. A redeploy picks it up. The static bundle never includes it.
 
-`vercel.json` only tells Vercel not to cache the service worker or the manifest, so an update can replace the installed copy. After the first online visit, the service worker keeps the drills available offline. The service worker does not intercept `/api/`.
+`vercel.json` only tells Vercel not to cache the service worker or the manifest, so an update can replace the installed copy. After the first online visit, the service worker keeps the drills available offline. The service worker does not intercept `/api/`, including `/api/sb`, which is the same-origin proxy for the shared board.
 
 ## Feedback
 
@@ -144,6 +144,8 @@ When a player's season points reach `seasonPointsTarget`, that player wins the s
 After a duel, the summary shows a Wordle-style grid (green for right, black for a miss) and copies it without the phrases. Practice does not add a season point. A duel does update the on-phone practice history.
 
 The shared board is Supabase. [`supabase/migrations`](supabase/migrations) creates `players`, `seasons`, and `daily_results`. Row level security lets the anon key read those tables and insert a result only for a player in the allowlist, when the other fields match the checks (one row per player per day, marks that match the score, a sane elapsed time). Anon cannot add a player, and cannot update or delete. The app subscribes to new results and also reloads when the phone comes back to the foreground.
+
+Reads and writes do not go straight from the phone to `*.supabase.co`. The client calls same-origin `/api/sb/rest/v1`, and [`api/sb/[...path].ts`](api/sb/[...path].ts) forwards that to `VITE_SUPABASE_URL`. iPhone Safari otherwise fails the cross-origin POST in the browser and reports `TypeError: Load failed`, so the score never leaves the phone. Live updates still use the project URL. `npm run dev` and `npm run preview` proxy `/api/sb` the same way. No extra Vercel variable is required.
 
 Without the env vars, the scoreboard says the duel is only on that phone. With a bad or missing migration, the duel waits and practice still runs.
 

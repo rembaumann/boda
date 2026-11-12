@@ -1,4 +1,10 @@
 {
+  "rewrites": [
+    {
+      "source": "/api/sb/rest/v1/:path*",
+      "destination": "https://pkxgryaycnwpktsafodk.supabase.co/rest/v1/:path*"
+    }
+  ],
   "headers": [
     {
       "source": "/sw.js",
