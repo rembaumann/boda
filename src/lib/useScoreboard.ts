@@ -2,7 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import type { SeasonConfig } from "../domain/types";
 import { formatDuelDate } from "./calendar";
 import { loadLocalResults, saveLocalResult } from "./duelStore";
-import { getScoreboardGateway } from "./scoreboard";
+import { BOARD_UNREACHABLE } from "./boardEndpoint";
+import { boardFailureMessage, getScoreboardGateway } from "./scoreboard";
 import { marksToBooleans, shareMessage } from "./share";
 import { presentBoard, resultKey, type BoardView, type DuelResult } from "./scoring";
 
@@ -46,7 +47,7 @@ export function useScoreboard(input: {
       setError(null);
     } catch (caught) {
       setPhase("error");
-      setError(caught instanceof Error ? caught.message : "Couldn't load the shared board.");
+      setError(boardFailureMessage(caught));
     }
   }, [gateway]);
 
@@ -64,7 +65,7 @@ export function useScoreboard(input: {
         (caught: unknown) => {
           if (cancelled) return;
           setPhase("error");
-          setError(caught instanceof Error ? caught.message : "Couldn't load the shared board.");
+          setError(boardFailureMessage(caught));
         },
       );
     };
@@ -140,7 +141,7 @@ export function useScoreboard(input: {
         await refresh();
         return outcome === "duplicate" ? "Already on the shared board." : "On the shared board.";
       } catch (caught) {
-        const message = caught instanceof Error ? caught.message : "The shared board rejected this duel.";
+        const message = boardFailureMessage(caught);
         setPhase("error");
         setError(message);
         return `Saved on this phone. ${message}`;
@@ -161,7 +162,7 @@ export function useScoreboard(input: {
         ? "Both phones share this board."
         : phase === "local"
           ? "On this phone until Supabase env vars are set."
-          : (error ?? "Couldn't load the shared board.");
+          : (error ?? BOARD_UNREACHABLE);
 
   return {
     view,

@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { BOARD_UNREACHABLE, sharedBoardUrl } from "./boardEndpoint";
 import { scoreableResult, type DuelResult } from "./scoring";
 
 const PAGE_SIZE = 1000;
@@ -85,19 +86,54 @@ function readEnv(): { url: string; anonKey: string } | null {
   return { url, anonKey };
 }
 
-function clientFor(env: { url: string; anonKey: string }): SupabaseClient {
+export function boardFailureMessage(caught: unknown): string {
+  const text =
+    caught instanceof Error ? `${caught.name}: ${caught.message}` : typeof caught === "string" ? caught : "";
+  if (isTransportFailure(text)) return BOARD_UNREACHABLE;
+  if (caught instanceof Error && caught.message) return caught.message;
+  if (typeof caught === "string" && caught) return caught;
+  return BOARD_UNREACHABLE;
+}
+
+function isTransportFailure(text: string): boolean {
+  return /typeerror\s*:|load failed|failed to fetch|networkerror|network request failed|failed to send a request/i.test(
+    text,
+  );
+}
+
+export function scoreboardFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+  const raw = input instanceof Request ? input.url : input instanceof URL ? input.href : String(input);
+  const origin = typeof window === "undefined" ? null : window.location.origin;
+  const next = sharedBoardUrl(raw, origin);
+  if (next === raw) return fetch(input, init);
+  if (input instanceof Request) return fetch(new Request(next, input));
+  return fetch(next, init);
+}
+
+type GatewayOptions = {
+  url: string;
+  anonKey: string;
+  fetch?: typeof fetch;
+  retry?: boolean;
+};
+
+function clientFor(env: { url: string; anonKey: string }, options?: GatewayOptions): SupabaseClient {
   return createClient(env.url, env.anonKey, {
     auth: {
       persistSession: false,
       autoRefreshToken: false,
       detectSessionInUrl: false,
     },
+    db: options?.retry === false ? { retry: false } : undefined,
+    global: {
+      fetch: options?.fetch ?? scoreboardFetch,
+    },
   });
 }
 
 async function fetchAll(client: SupabaseClient): Promise<DuelResult[]> {
   const seasons = await client.from("seasons").select("id").limit(1);
-  if (seasons.error) throw new Error(`Couldn't read seasons. ${seasons.error.message}`);
+  if (seasons.error) throw new Error(boardFailureMessage(seasons.error.message));
 
   const rows: DuelResult[] = [];
   let from = 0;
@@ -107,7 +143,7 @@ async function fetchAll(client: SupabaseClient): Promise<DuelResult[]> {
       .select("player_id,season_id,season_number,played_on,correct_count,question_count,elapsed_ms,marks,created_at")
       .order("created_at", { ascending: true })
       .range(from, from + PAGE_SIZE - 1);
-    if (error) throw new Error(`Couldn't read results. ${error.message}`);
+    if (error) throw new Error(boardFailureMessage(error.message));
     const page = data ?? [];
     for (const row of page) {
       const result = duelResultFromRow(row);
@@ -119,9 +155,9 @@ async function fetchAll(client: SupabaseClient): Promise<DuelResult[]> {
   return rows;
 }
 
-export function createScoreboardGateway(): ScoreboardGateway {
-  const env = readEnv();
-  if (!env) {
+export function createScoreboardGateway(options?: GatewayOptions): ScoreboardGateway {
+  const env = options ? { url: options.url.trim(), anonKey: options.anonKey.trim() } : readEnv();
+  if (!env?.url || !env.anonKey) {
     return {
       configured: false,
       fetchResults: async () => [],
@@ -132,7 +168,7 @@ export function createScoreboardGateway(): ScoreboardGateway {
     };
   }
 
-  const client = clientFor(env);
+  const client = clientFor(env, options);
   return {
     configured: true,
     fetchResults: () => fetchAll(client),
@@ -140,7 +176,7 @@ export function createScoreboardGateway(): ScoreboardGateway {
       const { error } = await client.from("daily_results").insert(toDailyResultInsert(result));
       if (!error) return "saved";
       if (isDuplicateResultError(error)) return "duplicate";
-      throw new Error(error.message);
+      throw new Error(boardFailureMessage(error.message));
     },
     subscribe: (onChange) => {
       const channel = client

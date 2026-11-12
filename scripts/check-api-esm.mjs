@@ -4,7 +4,7 @@ import { pathToFileURL } from "node:url";
 import ts from "typescript";
 
 const root = process.cwd();
-const entry = resolve(root, "api/feedback.ts");
+const entries = [resolve(root, "api/feedback.ts"), resolve(root, "api/sb/[...path].ts")];
 const outDir = resolve(root, ".api-check");
 
 function relativeImports(fileName, source) {
@@ -59,7 +59,7 @@ function walk(file) {
   for (const specifier of relativeImports(file, source)) walk(resolveTs(file, specifier));
 }
 
-walk(entry);
+for (const entry of entries) walk(entry);
 rmSync(outDir, { recursive: true, force: true });
 
 for (const file of files) {
@@ -76,9 +76,11 @@ for (const file of files) {
   writeFileSync(destination, transpiled.outputText);
 }
 
-const loaded = await import(pathToFileURL(outputPath(entry)).href);
-if (typeof loaded.default !== "function") {
-  throw new Error("api/feedback.ts must default-export the request handler.");
+for (const entry of entries) {
+  const loaded = await import(pathToFileURL(outputPath(entry)).href);
+  if (typeof loaded.default !== "function") {
+    throw new Error(`${relative(root, entry)} must default-export the request handler.`);
+  }
 }
 
-console.log(`Node loaded ${files.size} API modules, including ${relative(root, entry)}.`);
+console.log(`Node loaded ${files.size} API modules, including ${entries.map((entry) => relative(root, entry)).join(", ")}.`);
