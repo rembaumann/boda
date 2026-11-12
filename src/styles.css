@@ -34,9 +34,8 @@ body {
 }
 
 /* Installed iOS reports 100dvh as the screen minus the top safe area, so a
-   dvh shell stops short and the bug button sits on the player cards.
-   100lvh is the full screen. A Safari tab keeps 100dvh, which tracks the
-   toolbar instead of hiding the bottom control behind it. */
+   dvh shell stops short of the bottom of the phone. 100lvh is the full
+   screen. A Safari tab keeps 100dvh, which tracks the toolbar. */
 @media (display-mode: standalone), (display-mode: fullscreen) {
   html,
   body {
@@ -86,15 +85,12 @@ button {
 }
 
 .app-scroll {
-  /* basis 0 so WebKit shrinks this pane above the bug dock instead of
-     letting the dock paint on top of the scrolled controls. */
-  flex: 1 1 0%;
+  flex: 1 1 auto;
   min-height: 0;
   overflow: auto;
   display: flex;
   flex-direction: column;
   overscroll-behavior: contain;
-  scroll-padding-bottom: 12px;
 }
 
 .screen {
@@ -436,13 +432,14 @@ button {
 
 .drill-head {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 8px 12px;
 }
 
 .count {
   margin: 0;
+  justify-self: end;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
   font-weight: 600;
@@ -869,75 +866,56 @@ button {
   border: 0;
 }
 
-.bug-dock {
-  display: flex;
-  justify-content: flex-end;
-  flex: 0 0 auto;
-  padding: 8px calc(12px + env(safe-area-inset-right, 0px)) 10px 12px;
-}
-
-.bug-dock[hidden] {
-  display: none;
-}
-
-.bug-dock.is-concealed .bug-button {
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.bug-button {
-  width: 52px;
-  height: 52px;
+.header-bug {
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
+  padding: 0;
   border: 0;
   border-radius: 999px;
-  background: var(--accent);
-  color: var(--on-primary);
-  box-shadow: 0 8px 18px color-mix(in srgb, var(--ink) 16%, transparent);
+  background: transparent;
+  color: var(--accent);
   transition: transform 120ms ease;
 }
 
-.bug-button:active {
+.header-bug:active {
   transform: scale(0.98);
 }
 
 .bug-icon {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
 }
 
-.bug-backdrop {
-  position: fixed;
-  z-index: 30;
-  inset: 0;
-  border: 0;
-  background: color-mix(in srgb, var(--ink) 35%, transparent);
-}
-
-.bug-sheet {
-  position: fixed;
-  z-index: 31;
-  left: 50%;
-  bottom: var(--keyboard-inset, 0px);
-  width: min(100%, 30rem);
-  max-height: calc(100dvh - var(--keyboard-inset, 0px) - 12px);
-  overflow: auto;
-  transform: translateX(-50%);
-  padding: 14px 16px calc(16px + env(safe-area-inset-bottom, 0px));
-  border-radius: 22px 22px 0 0;
-  background: var(--surface);
-  box-shadow: 0 -12px 40px color-mix(in srgb, var(--ink) 18%, transparent);
-}
-
-.bug-sheet-head {
+.kind-switch {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.bug-sheet-head .section-title {
+.feedback-panel,
+.bug-report {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: left;
+}
+
+.bug-report {
+  margin-bottom: 16px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+}
+
+.send-feedback .feedback-panel {
+  margin-top: 12px;
+}
+
+.send-feedback .section-title,
+.feedback-panel .section-title {
   margin: 0;
 }
 
@@ -947,7 +925,7 @@ button {
   .text-button,
   .choice,
   .speaker,
-  .bug-button {
+  .header-bug {
     transition: none;
   }
 }

@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { categoryLabels } from "../content/categories";
 import { gradeTypedAnswer, normalizeAnswer, typeAnswerLead, type AnswerLead } from "../lib/grading";
-import type { DrillLive } from "../lib/feedbackClient";
+import type { DrillLive, FeedbackFields } from "../lib/feedbackClient";
 import type { Choice, ListenQuestion, MultipleChoiceQuestion, Question } from "../domain/types";
+import { BugReport, ReportBugButton } from "./FeedbackEntry";
 import { SpeakerButton } from "./SpeakerButton";
 
 const LEADS: Record<AnswerLead, string> = {
@@ -15,10 +16,14 @@ function DrillHeader({
   index,
   total,
   onExit,
+  reporting,
+  onToggleReport,
 }: {
   index: number;
   total: number;
   onExit: () => void;
+  reporting: boolean;
+  onToggleReport: () => void;
 }) {
   const [confirming, setConfirming] = useState(false);
 
@@ -30,6 +35,7 @@ function DrillHeader({
       <p className="count">
         {index + 1} of {total}
       </p>
+      <ReportBugButton open={reporting} onToggle={onToggleReport} />
       {confirming ? (
         <div className="confirm" role="group" aria-label="End this set">
           <p>End this set? It won't be saved.</p>
@@ -355,6 +361,7 @@ export function DrillScreen({
   total,
   phraseLang,
   isLast,
+  getFields,
   onExit,
   onResult,
   onLive,
@@ -364,15 +371,25 @@ export function DrillScreen({
   total: number;
   phraseLang: string;
   isLast: boolean;
+  getFields: () => FeedbackFields;
   onExit: () => void;
   onResult: (result: { correct: boolean; response: string | null }) => void;
   onLive?: (live: DrillLive | null) => void;
 }) {
+  const [reportFor, setReportFor] = useState<string | null>(null);
+  const reporting = reportFor === question.id;
   const percent = total === 0 ? 0 : ((index + 1) / total) * 100;
 
   return (
     <main className="screen screen-drill" data-screen="drill">
-      <DrillHeader key={index} index={index} total={total} onExit={onExit} />
+      <DrillHeader
+        key={index}
+        index={index}
+        total={total}
+        onExit={onExit}
+        reporting={reporting}
+        onToggleReport={() => setReportFor((current) => (current === question.id ? null : question.id))}
+      />
       <div
         className="progress"
         role="progressbar"
@@ -383,6 +400,7 @@ export function DrillScreen({
       >
         <span className="progress-fill" style={{ width: `${percent}%` }} />
       </div>
+      {reporting ? <BugReport getFields={getFields} onClose={() => setReportFor(null)} /> : null}
       <QuestionView
         key={question.id}
         question={question}

@@ -1,5 +1,7 @@
 import { allocateCounts } from "../lib/allocate";
+import { SendFeedback } from "./FeedbackEntry";
 import { FeedbackForm } from "./FeedbackForm";
+import type { FeedbackFields } from "../lib/feedbackClient";
 import { CopyResultButton } from "./ShareGrid";
 import { DRILL_TYPES, type DrillMix, type PlayerConfig, type SeasonConfig } from "../domain/types";
 import type { SessionRecord } from "../lib/progress";
@@ -41,6 +43,7 @@ export function HomeScreen({
   onDuel,
   onRetry,
   onReload,
+  getFields,
 }: {
   appName: string;
   tagline: string;
@@ -66,6 +69,7 @@ export function HomeScreen({
   onDuel: () => void;
   onRetry: () => void;
   onReload: () => void;
+  getFields: () => FeedbackFields;
 }) {
   const standalone = isStandalone();
   const seasonNumber = String(board.seasonNumber).padStart(2, "0");
@@ -204,6 +208,7 @@ export function HomeScreen({
         {standalone ? null : (
           <p className="quiet">On iPhone, share this page and choose Add to Home Screen.</p>
         )}
+        <SendFeedback getFields={getFields} />
       </div>
     </main>
   );

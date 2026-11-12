@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from "react";
 import { appConfig } from "./config/app.config";
-import { AppFrame } from "./components/BugButton";
+import { AppFrame } from "./components/AppFrame";
 import { DrillScreen } from "./components/DrillScreen";
 import { HomeScreen } from "./components/HomeScreen";
 import { SummaryScreen } from "./components/SummaryScreen";
@@ -138,7 +138,7 @@ export function App() {
 
   if (!practiceSeason || !player || practiceSeasons.length === 0) {
     return (
-      <AppFrame getFields={feedbackFields}>
+      <AppFrame>
         <main className="screen">
           <h1 className="wordmark" translate="no">
             {appConfig.name}
@@ -328,7 +328,7 @@ export function App() {
     const question = screen.questions[screen.index];
     if (!question) {
       return (
-        <AppFrame getFields={feedbackFields}>
+        <AppFrame>
           <main className="screen">
             <p>This set is empty.</p>
             <button type="button" className="primary" onClick={exit}>
@@ -339,13 +339,14 @@ export function App() {
       );
     }
     return (
-      <AppFrame getFields={feedbackFields}>
+      <AppFrame>
         <DrillScreen
           question={question}
           index={screen.index}
           total={screen.questions.length}
           phraseLang={appConfig.voice.locale}
           isLast={screen.index + 1 >= screen.questions.length}
+          getFields={feedbackFields}
           onExit={exit}
           onResult={finish}
           onLive={(live) => {
@@ -359,7 +360,7 @@ export function App() {
   if (screen.kind === "summary") {
     const duel = screen.mode === "duel";
     return (
-      <AppFrame getFields={feedbackFields}>
+      <AppFrame>
         <SummaryScreen
           playerName={currentPlayer.name}
           seasonTheme={screen.seasonTheme}
@@ -379,7 +380,7 @@ export function App() {
   }
 
   return (
-    <AppFrame getFields={feedbackFields}>
+    <AppFrame>
       <HomeScreen
       appName={appConfig.name}
       tagline={appConfig.tagline}
@@ -409,6 +410,7 @@ export function App() {
       onReload={() => {
         void scoreboard.refresh();
       }}
+      getFields={feedbackFields}
     />
     </AppFrame>
   );
