@@ -46,6 +46,12 @@ jobs:
       - name: Unit tests
         run: npm test
 
+      - name: Design tokens
+        run: |
+          npm run tokens
+          node --input-type=module -e "import fs from 'node:fs'; JSON.parse(fs.readFileSync('src/styles/tokens.json','utf8'))"
+          git diff --exit-code -- src/styles/tokens.json src/styles/tokens.css src/styles/tailwind.theme.css
+
       - name: Production build
         run: npm run build
 

@@ -6,7 +6,7 @@
 
 html {
   background: var(--background);
-  color-scheme: light;
+  color-scheme: light dark;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
@@ -14,11 +14,9 @@ html {
 body {
   margin: 0;
   min-height: 100dvh;
-  background:
-    radial-gradient(120% 70% at 100% -12%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 48%),
-    var(--background);
+  background: var(--background);
   color: var(--ink);
-  font-family: "Outfit", "Avenir Next", "Segoe UI", sans-serif;
+  font-family: var(--boda-font-sans);
   font-size: 16px;
   line-height: 1.4;
   display: grid;
@@ -58,6 +56,12 @@ textarea {
   -webkit-appearance: none;
 }
 
+button,
+a,
+[role="tab"] {
+  min-height: var(--boda-size-tap-min);
+}
+
 button {
   cursor: pointer;
   touch-action: manipulation;
@@ -68,7 +72,7 @@ button {
 }
 
 :focus-visible {
-  outline: 2px solid var(--gold);
+  outline: 2px solid var(--boda-color-focus);
   outline-offset: 3px;
 }
 
@@ -104,18 +108,6 @@ button {
     calc(20px + env(safe-area-inset-left, 0px));
 }
 
-.wordmark,
-.season-title,
-.prompt,
-.exact,
-.score,
-.result-es,
-.stats dd,
-.summary-title {
-  font-family: "Fraunces", "Iowan Old Style", Palatino, Georgia, serif;
-  font-optical-sizing: auto;
-}
-
 .wordmark {
   margin: 0;
   font-size: 2.6rem;
@@ -138,9 +130,9 @@ button {
   margin: 14px 0 0;
   max-width: 16rem;
   color: var(--muted);
-  font-family: "Fraunces", Georgia, serif;
-  font-style: italic;
-  font-weight: 600;
+  font-family: var(--boda-font-serif);
+  font-style: normal;
+  font-weight: 500;
   font-size: 1.15rem;
   line-height: 1.25;
 }
@@ -252,6 +244,7 @@ button {
   gap: 6px;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
+  font-stretch: var(--boda-stretch-score);
 }
 
 .standing-target,
@@ -259,6 +252,7 @@ button {
   color: var(--muted);
   font-size: 0.82rem;
   font-weight: 500;
+  font-stretch: 100%;
 }
 
 .today-line {
@@ -278,7 +272,7 @@ button {
   padding: 12px 14px;
   border-radius: 16px;
   background: var(--background);
-  font-family: "Outfit", "Avenir Next", "Segoe UI", sans-serif;
+  font-family: var(--boda-font-sans);
   font-size: 1.15rem;
   line-height: 1.45;
   letter-spacing: 0.08em;
@@ -411,7 +405,6 @@ button {
 
 .text-button.hint {
   align-self: flex-start;
-  min-height: 36px;
   color: var(--muted);
   font-weight: 500;
 }
@@ -710,6 +703,7 @@ button {
 .score {
   margin: 8px 0 0;
   font-weight: 600;
+  font-stretch: var(--boda-stretch-score);
   letter-spacing: -0.04em;
   line-height: 0.9;
 }

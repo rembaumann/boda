@@ -2,18 +2,10 @@ import { defineConfig } from "vitest/config";
 import { loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
-import { appConfig, THEME_COLORS } from "./src/config/app.config.ts";
+import { appConfig } from "./src/config/app.config.ts";
 
-function cssVarName(key: string): string {
-  return `--${key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}`;
-}
-
-function cssColor(value: string): string {
-  if (!/^#[0-9a-fA-F]{6}$/.test(value)) {
-    throw new Error(`Theme colors must be 6-digit hex values. Received "${value}".`);
-  }
-  return value;
-}
+/** Plaster `color.bg` from the token build. Manifest and theme-color stay on this value. */
+const themeColor = "#E9E9E4";
 
 function escapeText(value: string): string {
   return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
@@ -22,8 +14,6 @@ function escapeText(value: string): string {
 function escapeAttr(value: string): string {
   return escapeText(value).replaceAll('"', "&quot;");
 }
-
-const themeVars = THEME_COLORS.map((name) => `${cssVarName(name)}:${cssColor(appConfig.colors[name])}`).join(";");
 
 function supabaseProxy(url: string | undefined) {
   const target = url?.trim().replace(/\/$/, "");
@@ -44,12 +34,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       {
-        name: "boda-theme",
-        enforce: "pre",
-        transform(code, id) {
-          if (!id.replaceAll("\\", "/").endsWith("/src/styles.css")) return null;
-          return { code: `:root{${themeVars}}\n${code}`, map: null };
-        },
+        name: "boda-html",
         transformIndexHtml: {
           order: "pre",
           handler(html) {
@@ -57,8 +42,7 @@ export default defineConfig(({ mode }) => {
               .replaceAll("%APP_NAME%", escapeText(appConfig.name))
               .replaceAll("%APP_SHORT_NAME%", escapeAttr(appConfig.shortName))
               .replaceAll("%APP_DESCRIPTION%", escapeAttr(appConfig.description))
-              .replaceAll("%APP_LANG%", escapeAttr(appConfig.uiLanguage))
-              .replaceAll("%THEME_COLOR%", cssColor(appConfig.colors.background));
+              .replaceAll("%APP_LANG%", escapeAttr(appConfig.uiLanguage));
           },
         },
       },
@@ -83,8 +67,8 @@ export default defineConfig(({ mode }) => {
                 start_url: "/",
                 scope: "/",
                 display: "standalone",
-                background_color: appConfig.colors.background,
-                theme_color: appConfig.colors.background,
+                background_color: themeColor,
+                theme_color: themeColor,
                 icons: [
                   { src: "icon-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
                   { src: "icon-512.png", sizes: "512x512", type: "image/png", purpose: "any" },

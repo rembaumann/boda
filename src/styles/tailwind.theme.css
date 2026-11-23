@@ -1,0 +1,106 @@
+/* Tailwind v4 bridge. GENERATED. In your CSS entry:
+   @import "tailwindcss"; @import "./tokens.css"; @import "./tailwind.theme.css";
+   Utilities: bg-bg, text-text-muted, bg-ink text-on-ink, bg-season, text-player-b-text, text-score, font-serif, rounded-none, min-h-tap, pb-safe ... */
+@theme inline {
+  --color-bg: var(--boda-color-bg);
+  --color-surface: var(--boda-color-surface);
+  --color-surface-sunken: var(--boda-color-surface-sunken);
+  --color-border: var(--boda-color-border);
+  --color-border-strong: var(--boda-color-border-strong);
+  --color-text: var(--boda-color-text);
+  --color-text-muted: var(--boda-color-text-muted);
+  --color-focus: var(--boda-color-focus);
+  --color-ink: var(--boda-color-ink);
+  --color-on-ink: var(--boda-color-on-ink);
+  --color-ink-text: var(--boda-color-ink-text);
+  --color-ink-soft: var(--boda-color-ink-soft);
+  --color-brand: var(--boda-color-brand);
+  --color-on-brand: var(--boda-color-on-brand);
+  --color-brand-text: var(--boda-color-brand-text);
+  --color-brand-soft: var(--boda-color-brand-soft);
+  --color-celebrate: var(--boda-color-celebrate);
+  --color-on-celebrate: var(--boda-color-on-celebrate);
+  --color-celebrate-text: var(--boda-color-celebrate-text);
+  --color-celebrate-soft: var(--boda-color-celebrate-soft);
+  --color-correct: var(--boda-color-correct);
+  --color-on-correct: var(--boda-color-on-correct);
+  --color-correct-text: var(--boda-color-correct-text);
+  --color-correct-soft: var(--boda-color-correct-soft);
+  --color-wrong: var(--boda-color-wrong);
+  --color-on-wrong: var(--boda-color-on-wrong);
+  --color-wrong-text: var(--boda-color-wrong-text);
+  --color-wrong-soft: var(--boda-color-wrong-soft);
+  --color-player-a: var(--boda-color-player-a);
+  --color-on-player-a: var(--boda-color-on-player-a);
+  --color-player-a-text: var(--boda-color-player-a-text);
+  --color-player-a-soft: var(--boda-color-player-a-soft);
+  --color-player-b: var(--boda-color-player-b);
+  --color-on-player-b: var(--boda-color-on-player-b);
+  --color-player-b-text: var(--boda-color-player-b-text);
+  --color-player-b-soft: var(--boda-color-player-b-soft);
+  --color-season: var(--boda-color-season);
+  --color-on-season: var(--boda-color-on-season);
+  --color-season-text: var(--boda-color-season-text);
+  --color-season-soft: var(--boda-color-season-soft);
+  --color-primary: var(--boda-color-primary);
+  --color-on-primary: var(--boda-color-on-primary);
+  --color-accent: var(--boda-color-accent);
+  --font-sans: var(--boda-font-sans);
+  --font-serif: var(--boda-font-serif);
+  --text-caption: var(--boda-text-caption);
+  --text-caption--line-height: var(--boda-leading-caption);
+  --text-caption--letter-spacing: var(--boda-tracking-caption);
+  --text-caption--font-weight: var(--boda-weight-caption);
+  --text-body-sm: var(--boda-text-body-sm);
+  --text-body-sm--line-height: var(--boda-leading-body-sm);
+  --text-body-sm--letter-spacing: var(--boda-tracking-body-sm);
+  --text-body-sm--font-weight: var(--boda-weight-body-sm);
+  --text-body: var(--boda-text-body);
+  --text-body--line-height: var(--boda-leading-body);
+  --text-body--letter-spacing: var(--boda-tracking-body);
+  --text-body--font-weight: var(--boda-weight-body);
+  --text-body-lg: var(--boda-text-body-lg);
+  --text-body-lg--line-height: var(--boda-leading-body-lg);
+  --text-body-lg--letter-spacing: var(--boda-tracking-body-lg);
+  --text-body-lg--font-weight: var(--boda-weight-body-lg);
+  --text-label: var(--boda-text-label);
+  --text-label--line-height: var(--boda-leading-label);
+  --text-label--letter-spacing: var(--boda-tracking-label);
+  --text-label--font-weight: var(--boda-weight-label);
+  --text-title: var(--boda-text-title);
+  --text-title--line-height: var(--boda-leading-title);
+  --text-title--letter-spacing: var(--boda-tracking-title);
+  --text-title--font-weight: var(--boda-weight-title);
+  --text-headline: var(--boda-text-headline);
+  --text-headline--line-height: var(--boda-leading-headline);
+  --text-headline--letter-spacing: var(--boda-tracking-headline);
+  --text-headline--font-weight: var(--boda-weight-headline);
+  --text-invitation: var(--boda-text-invitation);
+  --text-invitation--line-height: var(--boda-leading-invitation);
+  --text-invitation--letter-spacing: var(--boda-tracking-invitation);
+  --text-invitation--font-weight: var(--boda-weight-invitation);
+  --text-season: var(--boda-text-season);
+  --text-season--line-height: var(--boda-leading-season);
+  --text-season--letter-spacing: var(--boda-tracking-season);
+  --text-season--font-weight: var(--boda-weight-season);
+  --text-score: var(--boda-text-score);
+  --text-score--line-height: var(--boda-leading-score);
+  --text-score--letter-spacing: var(--boda-tracking-score);
+  --text-score--font-weight: var(--boda-weight-score);
+  --spacing: 0.25rem;
+  --radius-none: var(--boda-radius-none);
+  --radius-sm: var(--boda-radius-sm);
+  --radius-md: var(--boda-radius-md);
+  --shadow-overlay: var(--boda-shadow-overlay);
+  --ease-standard: var(--boda-ease-standard);
+  --ease-decelerate: var(--boda-ease-decelerate);
+  --ease-accelerate: var(--boda-ease-accelerate);
+  --ease-spring: var(--boda-ease-spring);
+}
+@utility min-h-tap { min-height: var(--boda-size-tap-min); }
+@utility min-w-tap { min-width: var(--boda-size-tap-min); }
+@utility h-control { height: var(--boda-size-control); }
+@utility pt-safe { padding-top: var(--boda-safe-top); }
+@utility pb-safe { padding-bottom: var(--boda-safe-bottom); }
+@utility stretch-score { font-stretch: var(--boda-stretch-score); }
+@utility stretch-season { font-stretch: var(--boda-stretch-season); }
