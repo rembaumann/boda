@@ -29,5 +29,5 @@ export function shareMessage(input: {
   }
   const correct = input.marks.filter(Boolean).length;
   const grid = rows.join("\n");
-  return `${input.appName} · ${input.dateLabel}\n${input.playerName} · ${correct}/${input.marks.length}\n\n${grid}`;
+  return `${input.appName}, ${input.dateLabel}\n${input.playerName}, ${correct}/${input.marks.length}\n\n${grid}`;
 }

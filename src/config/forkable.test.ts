@@ -67,7 +67,6 @@ describe("forkable copy", () => {
       "primary",
       "on-primary",
       "accent",
-      "gold",
       "line",
       "correct",
       "correct-bg",
@@ -78,6 +77,8 @@ describe("forkable copy", () => {
       expect(css).toContain(`var(--${color})`);
       expect(tokens).toContain(`--${color}: var(--boda-color-`);
     }
+    expect(tokens).toContain("--gold: var(--boda-color-celebrate)");
+    expect(css).not.toContain("var(--gold)");
     expect(css).toContain("var(--boda-color-focus)");
     expect(css).toContain("min-height: var(--boda-size-tap-min)");
     expect(css).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);

@@ -46,7 +46,7 @@ export function SummaryScreen({
         <span className="score-number">{correctCount}</span>
         <span className="score-total">/{total}</span>
       </p>
-      {elapsedLabel ? <p className="quiet">Time · {elapsedLabel}</p> : null}
+      {elapsedLabel ? <p className="quiet">Time: {elapsedLabel}</p> : null}
       <p className="headline">{headline(correctCount, total)}</p>
       {shareText ? <ShareGrid text={shareText} /> : null}
       {syncNote ? <p className="quiet">{syncNote}</p> : null}
