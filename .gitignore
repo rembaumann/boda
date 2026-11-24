@@ -10,3 +10,5 @@ dev-dist
 playwright-report
 test-results
 .api-check
+src/styles/contrast-report.md
+src/styles/contrast.json

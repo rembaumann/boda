@@ -2,25 +2,9 @@ import type { Difficulty, PlayerConfig, SeasonConfig } from "../domain/types";
 
 /**
  * Couple-specific settings live here and in `src/content`.
+ * Colours, player identity, and season accents live in `config/boda.theme.json`.
  * See the README section "Make it your own".
  */
-export const THEME_COLORS = [
-  "background",
-  "surface",
-  "ink",
-  "muted",
-  "primary",
-  "onPrimary",
-  "accent",
-  "gold",
-  "line",
-  "correct",
-  "correctBg",
-  "incorrect",
-  "incorrectBg",
-] as const;
-
-export type ThemeColor = (typeof THEME_COLORS)[number];
 
 /**
  * Where in-app feedback is filed. The API key stays on the server.
@@ -50,7 +34,6 @@ export type AppConfig = {
   description: string;
   uiLanguage: string;
   storageKey: string;
-  colors: Record<ThemeColor, string>;
   voice: {
     locale: string;
     fallbackLanguage: string;
@@ -78,21 +61,6 @@ export const appConfig: AppConfig = {
   description: "A pocket practice app for learning Mexican Spanish together.",
   uiLanguage: "en",
   storageKey: "boda.progress.v1",
-  colors: {
-    background: "#F3EEE4",
-    surface: "#FFFCF8",
-    ink: "#241C16",
-    muted: "#655B51",
-    primary: "#1E3A32",
-    onPrimary: "#F6F1E7",
-    accent: "#C6522A",
-    gold: "#A68542",
-    line: "#E4D8C6",
-    correct: "#1B6B43",
-    correctBg: "#E5F4EB",
-    incorrect: "#9D342C",
-    incorrectBg: "#FDECEA",
-  },
   voice: {
     locale: "es-MX",
     fallbackLanguage: "es",

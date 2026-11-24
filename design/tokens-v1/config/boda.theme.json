@@ -1,0 +1,181 @@
+{
+  "$comment": "Everything couple-specific lives here. Forkers: change names, player colors, and seasons, then run `node build-tokens.mjs`. The build fails if any text/background pair drops below WCAG AA.",
+  "app": {
+    "name": "Boda",
+    "tagline": "Duelo diario de español mexicano"
+  },
+  "activeSeason": "scouting-mexico-city",
+  "$activeSeason": "THE one value that swaps the theme. The build writes it as the :root default; at runtime set <html data-season> to the same id (later: from the Supabase seasons row).",
+  "ink": {
+    "light": {
+      "fill": "#1F2420",
+      "on": "#F4F4F0",
+      "text": "#1F2420",
+      "soft": "#D5D6CF"
+    },
+    "dark": {
+      "fill": "#EEEBE3",
+      "on": "#121411",
+      "text": "#EEEBE3",
+      "soft": "#2C302A"
+    },
+    "$why": "Hierro forjado: the black steel window frames at both venues (CASO's glass canopy, Bola's steel-and-glass terrace). Primary buttons and active states."
+  },
+  "brand": {
+    "light": {
+      "fill": "#B4235A",
+      "on": "#FFFFFF",
+      "text": "#A21E50",
+      "soft": "#F9E3EB"
+    },
+    "dark": {
+      "fill": "#F28AB0",
+      "on": "#2A0E19",
+      "text": "#F28AB0",
+      "soft": "#3A1A26"
+    },
+    "$why": "Bugambilia: the pink blooms climbing CASO's brick and the city's walls. Wordmark and rare brand moments only."
+  },
+  "celebrate": {
+    "light": {
+      "fill": "#F2A20C",
+      "on": "#2A1D15",
+      "text": "#7C4D00",
+      "soft": "#FDEFD2"
+    },
+    "dark": {
+      "fill": "#F5B63A",
+      "on": "#2A1D15",
+      "text": "#F5B63A",
+      "soft": "#3A2B12"
+    },
+    "$why": "Luz de vela / cempasúchil gold: the warm candle and string-light glow of evening receptions in both patios. Wins and trophies only."
+  },
+  "players": [
+    {
+      "slot": "a",
+      "id": "rem",
+      "name": "Rem",
+      "initial": "R",
+      "colorName": "Talavera cobalt (Bola's talavera-tiled stairs)",
+      "light": {
+        "fill": "#1D4FA3",
+        "on": "#FFFFFF",
+        "text": "#1D4FA3",
+        "soft": "#E2E9F7"
+      },
+      "dark": {
+        "fill": "#8DB1F7",
+        "on": "#0E1A33",
+        "text": "#8DB1F7",
+        "soft": "#1A2540"
+      },
+      "shape": "circle",
+      "pattern": "solid"
+    },
+    {
+      "slot": "b",
+      "id": "shannon",
+      "name": "Shannon",
+      "initial": "S",
+      "colorName": "Ocre (CASO's mustard velvet as it reads in shade, pushed toward yellow-ochre limewash)",
+      "light": {
+        "fill": "#A36909",
+        "on": "#FFFFFF",
+        "text": "#835300",
+        "soft": "#FEE9D0"
+      },
+      "dark": {
+        "fill": "#D08812",
+        "on": "#1C1200",
+        "text": "#D08812",
+        "soft": "#33261A"
+      },
+      "shape": "diamond",
+      "pattern": "hatch",
+      "$decision": "2026-11-10: Rem picked ochre over terracotta (Barro #AD4309). Chosen from 3 candidates in shannon/eval.json; see BODA-TOKENS-v1.md §4."
+    }
+  ],
+  "seasons": [
+    {
+      "id": "scouting-mexico-city",
+      "order": 1,
+      "nameEs": "Viaje de exploración CDMX",
+      "nameEn": "Scouting Trip CDMX",
+      "accentName": "Helecho (fern, Bola's garden)",
+      "light": {
+        "fill": "#3E5A34",
+        "on": "#FFFFFF",
+        "text": "#3E5A34",
+        "soft": "#E3EADB"
+      },
+      "dark": {
+        "fill": "#3E5A34",
+        "on": "#FFFFFF",
+        "text": "#A9C79A",
+        "soft": "#1F2A1B",
+        "$note": "v0.2: in dark mode the season wall keeps its daylight paint (a pale wall glared at night); dark text/soft variants unchanged"
+      }
+    },
+    {
+      "id": "vendors-planner",
+      "order": 2,
+      "nameEs": "Proveedores y planner",
+      "nameEn": "Vendors & Planner",
+      "accentName": "Ladrillo (CASO's weathered brick)",
+      "light": {
+        "fill": "#7B4E3C",
+        "on": "#FFFFFF",
+        "text": "#7B4E3C",
+        "soft": "#EFE3DC"
+      },
+      "dark": {
+        "fill": "#7B4E3C",
+        "on": "#FFFFFF",
+        "text": "#D9A78F",
+        "soft": "#2E211B",
+        "$note": "v0.2: in dark mode the season wall keeps its daylight paint (a pale wall glared at night); dark text/soft variants unchanged"
+      }
+    },
+    {
+      "id": "family-guests",
+      "order": 3,
+      "nameEs": "Familia e invitados",
+      "nameEn": "Family & Guests",
+      "accentName": "Buganvilia",
+      "light": {
+        "fill": "#B4235A",
+        "on": "#FFFFFF",
+        "text": "#A21E50",
+        "soft": "#F9E3EB"
+      },
+      "dark": {
+        "fill": "#B4235A",
+        "on": "#FFFFFF",
+        "text": "#F28AB0",
+        "soft": "#3A1A26",
+        "$note": "v0.2: in dark mode the season wall keeps its daylight paint (a pale wall glared at night); dark text/soft variants unchanged"
+      }
+    },
+    {
+      "id": "toast-vows",
+      "order": 4,
+      "nameEs": "Brindis y votos",
+      "nameEn": "Toast & Vows",
+      "accentName": "Cantera (Bola's patinated stone)",
+      "light": {
+        "fill": "#6A6226",
+        "on": "#FFFFFF",
+        "text": "#5C5520",
+        "soft": "#ECEAD6"
+      },
+      "dark": {
+        "fill": "#6A6226",
+        "on": "#FFFFFF",
+        "text": "#CFC88A",
+        "soft": "#2A2914",
+        "$note": "v0.2: in dark mode the season wall keeps its daylight paint (a pale wall glared at night); dark text/soft variants unchanged"
+      }
+    }
+  ]
+}

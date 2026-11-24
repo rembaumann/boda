@@ -6,7 +6,7 @@
 
 html {
   background: var(--background);
-  color-scheme: light;
+  color-scheme: light dark;
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
@@ -14,11 +14,9 @@ html {
 body {
   margin: 0;
   min-height: 100dvh;
-  background:
-    radial-gradient(120% 70% at 100% -12%, color-mix(in srgb, var(--accent) 18%, transparent), transparent 48%),
-    var(--background);
+  background: var(--background);
   color: var(--ink);
-  font-family: "Outfit", "Avenir Next", "Segoe UI", sans-serif;
+  font-family: var(--boda-font-sans);
   font-size: 16px;
   line-height: 1.4;
   display: grid;
@@ -58,6 +56,12 @@ textarea {
   -webkit-appearance: none;
 }
 
+button,
+a,
+[role="tab"] {
+  min-height: var(--boda-size-tap-min);
+}
+
 button {
   cursor: pointer;
   touch-action: manipulation;
@@ -68,7 +72,7 @@ button {
 }
 
 :focus-visible {
-  outline: 2px solid var(--gold);
+  outline: 2px solid var(--boda-color-focus);
   outline-offset: 3px;
 }
 
@@ -104,18 +108,6 @@ button {
     calc(20px + env(safe-area-inset-left, 0px));
 }
 
-.wordmark,
-.season-title,
-.prompt,
-.exact,
-.score,
-.result-es,
-.stats dd,
-.summary-title {
-  font-family: "Fraunces", "Iowan Old Style", Palatino, Georgia, serif;
-  font-optical-sizing: auto;
-}
-
 .wordmark {
   margin: 0;
   font-size: 2.6rem;
@@ -130,17 +122,17 @@ button {
   width: 36px;
   height: 3px;
   margin-top: 12px;
-  border-radius: 999px;
-  background: var(--gold);
+  border-radius: 0;
+  background: var(--boda-color-season);
 }
 
 .tagline {
   margin: 14px 0 0;
   max-width: 16rem;
   color: var(--muted);
-  font-family: "Fraunces", Georgia, serif;
-  font-style: italic;
-  font-weight: 600;
+  font-family: var(--boda-font-serif);
+  font-style: normal;
+  font-weight: 500;
   font-size: 1.15rem;
   line-height: 1.25;
 }
@@ -156,7 +148,7 @@ button {
   min-height: 44px;
   padding: 0 14px;
   border: 1.5px solid var(--line);
-  border-radius: 999px;
+  border-radius: 0;
   background: var(--surface);
   white-space: nowrap;
 }
@@ -169,20 +161,19 @@ button {
 
 .season-card {
   margin-top: 22px;
-  padding: 18px 16px 16px;
-  border: 1px solid var(--line);
-  border-radius: 22px;
-  background: var(--surface);
+  padding: 18px 0 16px;
+  border: 0;
+  border-top: 2px solid var(--boda-color-ink);
+  border-radius: 0;
+  background: transparent;
 }
 
 .season-kicker,
 .eyebrow {
   margin: 0;
   color: var(--accent);
-  font-size: 0.72rem;
+  font-size: 0.875rem;
   font-weight: 600;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
 }
 
 .season-title,
@@ -208,10 +199,8 @@ button {
 .stats dt {
   margin: 0;
   color: var(--muted);
-  font-size: 0.68rem;
+  font-size: 0.875rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .stats dd {
@@ -252,6 +241,7 @@ button {
   gap: 6px;
   font-variant-numeric: tabular-nums;
   font-weight: 600;
+  font-stretch: var(--boda-stretch-score);
 }
 
 .standing-target,
@@ -259,6 +249,7 @@ button {
   color: var(--muted);
   font-size: 0.82rem;
   font-weight: 500;
+  font-stretch: 100%;
 }
 
 .today-line {
@@ -276,9 +267,9 @@ button {
 .share-grid {
   margin: 0;
   padding: 12px 14px;
-  border-radius: 16px;
+  border-radius: 0;
   background: var(--background);
-  font-family: "Outfit", "Avenir Next", "Segoe UI", sans-serif;
+  font-family: var(--boda-font-sans);
   font-size: 1.15rem;
   line-height: 1.45;
   letter-spacing: 0.08em;
@@ -315,8 +306,9 @@ button {
   align-items: flex-start;
   gap: 4px;
   padding: 14px;
-  border: 1.5px solid var(--line);
-  border-radius: 18px;
+  border: 0;
+  border-top: 2px solid var(--boda-color-border-strong);
+  border-radius: var(--boda-radius-sm);
   background: var(--surface);
   text-align: left;
 }
@@ -375,7 +367,7 @@ button {
   width: 100%;
   min-height: 56px;
   border: 0;
-  border-radius: 16px;
+  border-radius: var(--boda-radius-sm);
   background: var(--primary);
   color: var(--on-primary);
   font-weight: 600;
@@ -391,7 +383,7 @@ button {
   width: 100%;
   min-height: 52px;
   border: 1.5px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--boda-radius-sm);
   background: var(--surface);
   font-weight: 600;
 }
@@ -411,7 +403,6 @@ button {
 
 .text-button.hint {
   align-self: flex-start;
-  min-height: 36px;
   color: var(--muted);
   font-weight: 500;
 }
@@ -448,7 +439,7 @@ button {
 .confirm {
   grid-column: 1 / -1;
   padding: 12px;
-  border-radius: 16px;
+  border-radius: var(--boda-radius-sm);
   background: var(--surface);
   border: 1px solid var(--line);
 }
@@ -467,7 +458,7 @@ button {
 .progress {
   height: 4px;
   margin: 8px 0 16px;
-  border-radius: 999px;
+  border-radius: 0;
   background: var(--line);
   overflow: hidden;
 }
@@ -505,7 +496,7 @@ button {
   min-height: 52px;
   padding: 0 16px 0 14px;
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--boda-radius-sm);
   background: var(--primary);
   color: var(--on-primary);
   font-weight: 600;
@@ -560,7 +551,7 @@ button {
   gap: 12px;
   padding: 12px 14px;
   border: 1.5px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--boda-radius-sm);
   background: var(--surface);
   text-align: left;
 }
@@ -571,7 +562,7 @@ button {
   height: 28px;
   display: grid;
   place-items: center;
-  border-radius: 999px;
+  border-radius: 0;
   background: color-mix(in srgb, var(--primary) 8%, var(--surface));
   color: var(--primary);
   font-size: 0.8rem;
@@ -584,10 +575,8 @@ button {
 
 .mark {
   flex: 0 0 auto;
-  font-size: 0.72rem;
+  font-size: 0.875rem;
   font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 
 .choice.is-correct {
@@ -615,7 +604,7 @@ button {
 .choice.is-correct .mark,
 .choice.is-wrong .mark {
   padding: 4px 8px;
-  border-radius: 999px;
+  border-radius: 0;
 }
 
 .choice[aria-disabled="true"]:not(.is-correct):not(.is-wrong) {
@@ -626,10 +615,8 @@ button {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  font-size: 0.78rem;
+  font-size: 0.875rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--muted);
 }
 
@@ -638,7 +625,7 @@ button {
   min-height: 56px;
   padding: 14px 16px;
   border: 1.5px solid var(--line);
-  border-radius: 16px;
+  border-radius: var(--boda-radius-sm);
   background: var(--surface);
   color: var(--ink);
   font-size: 1.125rem;
@@ -653,7 +640,7 @@ button {
 
 .feedback {
   padding: 14px 14px 12px;
-  border-radius: 16px;
+  border-radius: 0;
 }
 
 .feedback.is-correct {
@@ -710,6 +697,7 @@ button {
 .score {
   margin: 8px 0 0;
   font-weight: 600;
+  font-stretch: var(--boda-stretch-score);
   letter-spacing: -0.04em;
   line-height: 0.9;
 }
@@ -747,11 +735,9 @@ button {
   min-width: 52px;
   margin-top: 2px;
   padding: 4px 8px;
-  border-radius: 999px;
-  font-size: 0.68rem;
+  border-radius: 0;
+  font-size: 0.875rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   text-align: center;
 }
 
@@ -792,10 +778,11 @@ button {
 
 .suggest-card {
   margin-top: 8px;
-  padding: 16px;
-  border: 1px solid var(--line);
-  border-radius: 22px;
-  background: var(--surface);
+  padding: 16px 0;
+  border: 0;
+  border-top: 2px solid var(--boda-color-ink);
+  border-radius: 0;
+  background: transparent;
   text-align: left;
 }
 
@@ -873,7 +860,7 @@ button {
   place-items: center;
   padding: 0;
   border: 0;
-  border-radius: 999px;
+  border-radius: var(--boda-radius-sm);
   background: transparent;
   color: var(--accent);
   transition: transform 120ms ease;
@@ -881,11 +868,6 @@ button {
 
 .header-bug:active {
   transform: scale(0.98);
-}
-
-.bug-icon {
-  width: 22px;
-  height: 22px;
 }
 
 .kind-switch {
@@ -906,7 +888,7 @@ button {
   margin-bottom: 16px;
   padding: 12px;
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 0;
   background: var(--surface);
 }
 

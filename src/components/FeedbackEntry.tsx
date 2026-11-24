@@ -1,20 +1,7 @@
+import { Bug } from "@phosphor-icons/react";
 import { useCallback, useEffect, useState } from "react";
 import type { FeedbackFields, FeedbackKind } from "../lib/feedbackClient";
 import { FeedbackForm } from "./FeedbackForm";
-
-function BugIcon() {
-  return (
-    <svg className="bug-icon" viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        d="M12 7.2a2.2 2.2 0 1 0-2.2-2.2A2.2 2.2 0 0 0 12 7.2Zm0 1.3a5 5 0 0 0-5 5v.2a5 5 0 0 0 10 0v-.2a5 5 0 0 0-5-5Zm0 1.6a3.4 3.4 0 0 1 3.4 3.4v.2a3.4 3.4 0 0 1-6.8 0v-.2A3.4 3.4 0 0 1 12 10.1ZM5.2 12.2H3m18 0h-2.2M7.4 16.6 5.6 18.4M16.6 16.6l1.8 1.8M7.6 9.2 5.8 7.4M16.4 9.2l1.8-1.8"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
 
 function useEscape(open: boolean, close: () => void): void {
   useEffect(() => {
@@ -81,7 +68,7 @@ export function ReportBugButton({ open, onToggle }: { open: boolean; onToggle: (
       aria-expanded={open}
       onClick={onToggle}
     >
-      <BugIcon />
+      <Bug size={22} weight="bold" aria-hidden />
     </button>
   );
 }

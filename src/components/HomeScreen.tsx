@@ -9,7 +9,7 @@ import type { BoardView } from "../lib/scoring";
 
 function mixLine(mix: DrillMix, total: number): string {
   const counts = allocateCounts(mix, total, DRILL_TYPES);
-  return `${counts.multipleChoice ?? 0} choice · ${counts.typeAnswer ?? 0} type · ${counts.listen ?? 0} listen`;
+  return `${counts.multipleChoice ?? 0} choice, ${counts.typeAnswer ?? 0} type, ${counts.listen ?? 0} listen`;
 }
 
 function isStandalone(): boolean {
@@ -163,7 +163,7 @@ export function HomeScreen({
       <div className="actions">
         {lastSession ? (
           <p className="last-set">
-            Last set · {lastSession.correctCount}/{lastSession.total}
+            Last set: {lastSession.correctCount}/{lastSession.total}
           </p>
         ) : null}
         {canPlay ? (

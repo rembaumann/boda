@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "tokens": "node scripts/build-tokens.mjs --out src/styles",
     "build": "npm run typecheck && vite build",
     "preview": "vite preview --host 127.0.0.1",
     "lint": "eslint .",
@@ -15,14 +16,15 @@
     "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@phosphor-icons/react": "^2.1.10",
     "@supabase/supabase-js": "^2.119.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@fontsource/fraunces": "^5.3.0",
-    "@fontsource/outfit": "^5.3.0",
+    "@fontsource-variable/archivo": "^5.2.8",
+    "@fontsource/alegreya": "^5.2.8",
     "@playwright/test": "^1.65.0",
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",

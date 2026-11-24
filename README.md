@@ -85,12 +85,18 @@ The function is Node ESM. Its relative imports end in `.js`, which is the file V
 
 Nothing about a particular couple is written into the screens. Edit the files below, then restart `npm run dev`.
 
+### Colours, players, and seasons
+
+Colours, player colours, and the four season accents live in [`config/boda.theme.json`](config/boda.theme.json). Edit that file, then run `npm run tokens`. The command rebuilds `src/styles/tokens.json`, `tokens.css`, and `tailwind.theme.css`. It exits with an error if a text or background pair misses WCAG AA, if a tap-size token drops below 44px, or if `activeSeason` is not one of the season ids.
+
+`activeSeason` is the one value that sets the default theme. The app copies it onto `<html data-season>` at startup. Setting `data-season` in the browser swaps the accent without a rebuild. The ids stay `scouting-mexico-city`, `vendors-planner`, `family-guests`, and `toast-vows`, matching the seasons table. Names, drill mixes, and decks stay in the app config below.
+
 ### App, players, and seasons
 
 [`src/config/app.config.ts`](src/config/app.config.ts) holds:
 
-- App name, short name, tagline, and description. The document title, Home Screen label, and theme color are filled from this file at build time, so you don’t edit `index.html` for those.
-- Colors. They become CSS variables. Icons in `public/` are separate images; replace them if you recolor the app (`node scripts/generate-icons.mjs` redraws the PNGs from the SVGs and needs the `sharp` package installed).
+- App name, short name, tagline, and description. The document title and Home Screen label are filled from this file at build time, so you don’t edit `index.html` for those. The manifest theme color is the plaster background `#E9E9E4`.
+- Icons in `public/` are separate images. Replace them if you recolor the app (`node scripts/generate-icons.mjs` redraws the PNGs from the SVGs and needs the `sharp` package installed).
 - `voice.locale` (default `es-MX`) and `voice.fallbackLanguage` (default `es`).
 - `calendar.timeZone` — the IANA zone both phones use for “today”, so the daily set rolls over at the same local midnight.
 - `session.questionsPerSet` — how many questions are in one practice set and in one daily duel.

@@ -14,7 +14,7 @@ describe("share grid", () => {
         playerName: "Ada",
         marks,
       }),
-    ).toBe("sample · Nov 11\nAda · 7/10\n\n🟩🟩⬛🟩🟩\n⬛🟩🟩🟩⬛");
+    ).toBe("sample, Nov 11\nAda, 7/10\n\n🟩🟩⬛🟩🟩\n⬛🟩🟩🟩⬛");
     expect(shareMessage({ appName: "sample", dateLabel: "Nov 11", playerName: "Ada", marks })).not.toMatch(/hola|phrase/i);
   });
 });
